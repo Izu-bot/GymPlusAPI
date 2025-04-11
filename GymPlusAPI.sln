@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.Domain", "GymPlu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.Application", "GymPlusAPI.Application\GymPlusAPI.Application.csproj", "{7C17A342-9ED5-4E8F-B792-317A10E4EB1E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.Infrastructure", "GymPlusAPI.Infrastructure\GymPlusAPI.Infrastructure.csproj", "{1E335B4B-CEE1-454D-9D8F-1980B7E80503}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{7C17A342-9ED5-4E8F-B792-317A10E4EB1E}.Release|x64.Build.0 = Release|Any CPU
 		{7C17A342-9ED5-4E8F-B792-317A10E4EB1E}.Release|x86.ActiveCfg = Release|Any CPU
 		{7C17A342-9ED5-4E8F-B792-317A10E4EB1E}.Release|x86.Build.0 = Release|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Debug|x64.Build.0 = Debug|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Debug|x86.Build.0 = Debug|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Release|x64.ActiveCfg = Release|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Release|x64.Build.0 = Release|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Release|x86.ActiveCfg = Release|Any CPU
+		{1E335B4B-CEE1-454D-9D8F-1980B7E80503}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

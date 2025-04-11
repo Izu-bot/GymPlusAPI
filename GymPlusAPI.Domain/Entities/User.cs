@@ -10,6 +10,5 @@ public class User
     public string Name { get; set; } = string.Empty;
 
     // Faz comunicação com planilhas
-    public int SpreadsheetId { get; set; }
-    public Spreadsheet Spreadsheet { get; set; } = new();
+    public List<Spreadsheet> Spreadsheets { get; set; } = []; // Usuario tem várias planilhas
 }
