@@ -13,4 +13,11 @@ public class Spreadsheet
 
     // Referencia para os treinos
     public List<Workout> Workouts { get; set; } = [];
+
+    // Contructor
+    public Spreadsheet(string name, Guid userId)
+    {
+        Name = name;
+        UserId = userId;
+    }
 }

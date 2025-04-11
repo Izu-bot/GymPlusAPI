@@ -12,5 +12,5 @@ public class Workout
     
     // Referencia para a planilha
     public int SpreadsheetId { get; set; } // Fk
-    public Spreadsheet Spreadsheet { get; set; } = new();
+    public Spreadsheet Spreadsheet { get; set; } = new Spreadsheet(string.Empty, Guid.Empty);
 }
