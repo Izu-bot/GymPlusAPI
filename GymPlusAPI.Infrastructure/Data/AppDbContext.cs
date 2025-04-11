@@ -37,6 +37,7 @@ public class AppDbContext : DbContext
             entity.HasMany(u => u.Spreadsheets)
                 .WithOne(s => s.User)
                 .HasForeignKey(s => s.UserId)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete
         });
 

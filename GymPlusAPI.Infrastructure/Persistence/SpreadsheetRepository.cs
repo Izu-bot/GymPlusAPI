@@ -22,23 +22,14 @@ public class SpreadsheetRepository : ISpreadsheetRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Spreadsheet spreadsheet, Guid userId)
+    public async Task DeleteAsync(Spreadsheet spreadsheet)
     {
         if (spreadsheet == null)
         {
             throw new ArgumentNullException(nameof(spreadsheet));
         }
 
-        // Garante que a planilha pertence ao usuário
-        var existing = await _context.Spreadsheets
-            .FirstOrDefaultAsync(s => s.Id == spreadsheet.Id && s.UserId == userId);
-        
-        if (existing == null)
-        {
-            throw new InvalidOperationException("Spreadsheet not found or does not belong to the user.");
-        }
-
-        _context.Spreadsheets.Remove(existing);
+        _context.Spreadsheets.Remove(spreadsheet);
         await _context.SaveChangesAsync();
     }
 

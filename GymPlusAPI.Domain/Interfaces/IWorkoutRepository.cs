@@ -10,5 +10,5 @@ public interface IWorkoutRepository
     Task<IEnumerable<Workout>> GetWorkoutBySpreadsheetIdAsync(int spreadsheetId, Guid userId);
     Task AddAsync(Workout workout);
     Task UpdateAsync(Workout workout);
-    Task DeleteAsync(Workout workout, Guid userId);
+    Task DeleteAsync(Workout workout);
 }

@@ -9,7 +9,7 @@ public class Spreadsheet
 
     // Referencia para o usuário
     public Guid UserId { get; set; } // Fk
-    public User User { get; set; } = new();
+    public User? User { get; private set; }
 
     // Referencia para os treinos
     public List<Workout> Workouts { get; set; } = [];

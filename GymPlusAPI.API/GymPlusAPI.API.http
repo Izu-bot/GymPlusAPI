@@ -1,0 +1,7 @@
+@GymPlusAPI.API_HostAddress = http://localhost:5079/
+
+### Exemplo requisição
+GET {{GymPlusAPI.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

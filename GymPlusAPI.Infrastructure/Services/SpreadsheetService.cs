@@ -1,22 +1,34 @@
 using System;
 using GymPlusAPI.Application.DTOs.Spreadsheet;
 using GymPlusAPI.Application.DTOs.Workout;
+using GymPlusAPI.Application.Services;
 using GymPlusAPI.Domain.Entities;
 using GymPlusAPI.Domain.Interfaces;
+using GymPlusAPI.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace GymPlusAPI.Application.Services;
+namespace GymPlusAPI.Infrastructure.Services;
 
-public class SpreadsheetService
+public class SpreadsheetService : ISpreadsheetService
 {
     private readonly ISpreadsheetRepository _spreadsheetRepository;
-    public SpreadsheetService(ISpreadsheetRepository spreadsheetRepository) => _spreadsheetRepository = spreadsheetRepository;
+    private readonly AppDbContext _context;
+    public SpreadsheetService(ISpreadsheetRepository spreadsheetRepository, AppDbContext context)
+    {
+        _spreadsheetRepository = spreadsheetRepository;
+        _context = context;
+    }
 
     public async Task<int> CreateAsync(SpreadsheetCreateDTO dto, Guid userId)
     {
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
+            throw new Exception("Usuário não encontrado.");
+            
         var spreadsheet = new Spreadsheet(dto.Name, userId);
 
         await _spreadsheetRepository.AddAsync(spreadsheet);
-        
+
         return spreadsheet.Id;
     }
 
@@ -33,7 +45,7 @@ public class SpreadsheetService
     {
         var spreadsheetToDelete = await _spreadsheetRepository.GetSpreadsheetByIdAsync(spreadsheetId, userId) ?? throw new Exception("Planilha não encontrada.");
 
-        await _spreadsheetRepository.DeleteAsync(spreadsheetToDelete, userId);
+        await _spreadsheetRepository.DeleteAsync(spreadsheetToDelete);
     }
 
     public async Task<IEnumerable<SpreadsheetViewDTO>> GetAllAsync(Guid userId)
@@ -54,8 +66,10 @@ public class SpreadsheetService
     }
 
     public async Task<SpreadsheetViewDTO> GetByIdAsync(int spreadsheetId, Guid userId)
-    {
-        var spreadsheet = await _spreadsheetRepository.GetSpreadsheetByIdAsync(spreadsheetId, userId) ?? throw new Exception("Planilha não encontrada.");
+    {        
+        var spreadsheet = await _spreadsheetRepository.GetSpreadsheetByIdAsync(spreadsheetId, userId);
+        if (spreadsheet == null)
+            return null!;
 
         return new SpreadsheetViewDTO(
             spreadsheet.Id,

@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../GymPlusAPI.Application/GymPlusAPI.Application.csproj" />
     <ProjectReference Include="../GymPlusAPI.Domain/GymPlusAPI.Domain.csproj" />
   </ItemGroup>
 

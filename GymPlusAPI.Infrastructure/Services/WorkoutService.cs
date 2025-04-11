@@ -1,11 +1,12 @@
 using System;
 using GymPlusAPI.Application.DTOs.Workout;
+using GymPlusAPI.Application.Services;
 using GymPlusAPI.Domain.Entities;
 using GymPlusAPI.Domain.Interfaces;
 
-namespace GymPlusAPI.Application.Services;
+namespace GymPlusAPI.Infrastructure.Services;
 
-public class WorkoutService
+public class WorkoutService : IWorkoutService
 {
     private readonly IWorkoutRepository _workoutRepository;
     private readonly ISpreadsheetRepository _spreadsheetRepository;
@@ -54,7 +55,7 @@ public class WorkoutService
     {
         var workoutToDelete = await _workoutRepository.GetWorkoutByIdAsync(workoutId, userId) ?? throw new Exception("Exercício não encontrado.");
 
-        await _workoutRepository.DeleteAsync(workoutToDelete, userId);
+        await _workoutRepository.DeleteAsync(workoutToDelete);
     }
 
     public async Task<IEnumerable<WorkoutViewDTO>> GetAllAsync(Guid userId)

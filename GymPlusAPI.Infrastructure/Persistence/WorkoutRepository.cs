@@ -19,19 +19,9 @@ public class WorkoutRepository : IWorkoutRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Workout workout, Guid userId)
+    public async Task DeleteAsync(Workout workout)
     {
-        if (workout == null) throw new ArgumentNullException(nameof(workout));
-
-        // Garante que o treino pertence ao usuário via Spreadsheet
-        var existing = await _context.Workouts
-            .Include(w => w.Spreadsheet)
-            .FirstOrDefaultAsync(w => w.Id == workout.Id && w.Spreadsheet.UserId == userId);
-
-        if (existing == null)
-            throw new InvalidOperationException("Workout not found or does not belong to the user.");
-
-        _context.Workouts.Remove(existing);
+        _context.Workouts.Remove(workout);
         await _context.SaveChangesAsync();
     }
 
@@ -62,7 +52,7 @@ public class WorkoutRepository : IWorkoutRepository
 
     public async Task UpdateAsync(Workout workout)
     {
-        if (workout == null) throw new ArgumentNullException(nameof(workout));
+        // if (workout == null) throw new ArgumentNullException(nameof(workout));
 
         _context.Workouts.Update(workout);
         await _context.SaveChangesAsync();

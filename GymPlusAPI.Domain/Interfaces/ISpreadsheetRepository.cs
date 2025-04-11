@@ -9,5 +9,5 @@ public interface ISpreadsheetRepository
     Task<IEnumerable<Spreadsheet>> GetSpreadsheetsByUserAsync(Guid userId);
     Task AddAsync(Spreadsheet spreadsheet);
     Task UpdateAsync(Spreadsheet spreadsheet);
-    Task DeleteAsync(Spreadsheet spreadsheet, Guid userId);
+    Task DeleteAsync(Spreadsheet spreadsheet);
 }
