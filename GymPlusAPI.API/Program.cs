@@ -23,8 +23,10 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<ISpreadsheetRepository, SpreadsheetRepository>();
 builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ISpreadsheetService, SpreadsheetService>();
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

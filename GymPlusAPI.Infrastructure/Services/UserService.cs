@@ -1,0 +1,73 @@
+using System;
+using GymPlusAPI.Application.DTOs.User;
+using GymPlusAPI.Application.Services;
+using GymPlusAPI.Domain.Entities;
+using GymPlusAPI.Domain.Interfaces;
+
+namespace GymPlusAPI.Infrastructure.Services;
+
+public class UserService : IUserService
+{
+    private readonly IUserRepository _userRepository;
+    public UserService(IUserRepository userRepository) => _userRepository = userRepository;
+    public async Task<Guid> AddAsync(UserCreateDTO dto)
+    {
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto));
+        
+        var newUser = new User(dto.Username, dto.Password, dto.Name);
+
+        await _userRepository.AddAsync(newUser);
+        return newUser.Id;
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var userToDelete = await _userRepository.GetUserByIdAsync(id);
+
+        if (userToDelete == null)
+            throw new Exception("Usuário não encontrado.");
+
+        await _userRepository.DeleteAsync(userToDelete);
+    }
+
+    public async Task<IEnumerable<UserViewDTO>> GetAllAsync()
+    {
+        var users = await _userRepository.GetAllUsersAsync();
+
+        return users.Select(u => new UserViewDTO
+        (
+            u.Username,
+            u.Password,
+            u.Name
+        )).ToList();
+    }
+
+    public async Task<UserViewDTO?> GetByIdAsync(Guid id)
+    {
+        var user = await _userRepository.GetUserByIdAsync(id);
+        if (user == null)
+            return null!;
+
+        return new UserViewDTO
+        (
+            user.Username,
+            user.Password,
+            user.Name
+        );
+    }
+
+    public async Task UpdateAsync(UserUpdateDTO dto)
+    {
+        var userToUpdate = await _userRepository.GetUserByIdAsync(dto.Id);
+
+        if (userToUpdate == null)
+            throw new Exception("Usuário não encontrado.");
+
+        userToUpdate.Username = dto.Username;
+        userToUpdate.Password = dto.Password;
+        userToUpdate.Name = dto.Name;
+
+        await _userRepository.UpdateAsync(userToUpdate);
+    }
+}
