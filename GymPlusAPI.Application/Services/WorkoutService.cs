@@ -1,10 +1,10 @@
 using System;
 using GymPlusAPI.Application.DTOs.Workout;
-using GymPlusAPI.Application.Services;
+using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Domain.Entities;
 using GymPlusAPI.Domain.Interfaces;
 
-namespace GymPlusAPI.Infrastructure.Services;
+namespace GymPlusAPI.Application.Services;
 
 public class WorkoutService : IWorkoutService
 {

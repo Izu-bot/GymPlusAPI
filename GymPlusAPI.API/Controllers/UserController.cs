@@ -1,5 +1,5 @@
 using GymPlusAPI.Application.DTOs.User;
-using GymPlusAPI.Application.Services;
+using GymPlusAPI.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymPlusAPI.API.Controllers

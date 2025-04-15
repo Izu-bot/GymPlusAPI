@@ -1,7 +1,7 @@
 using System;
 using GymPlusAPI.Application.DTOs.Spreadsheet;
 
-namespace GymPlusAPI.Application.Services;
+namespace GymPlusAPI.Application.Interfaces;
 
 public interface ISpreadsheetService
 {

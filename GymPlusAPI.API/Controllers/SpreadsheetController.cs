@@ -1,6 +1,5 @@
 using GymPlusAPI.Application.DTOs.Spreadsheet;
-using GymPlusAPI.Application.DTOs.Workout;
-using GymPlusAPI.Application.Services;
+using GymPlusAPI.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymPlusAPI.API.Controllers

@@ -1,8 +1,9 @@
+using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Application.Services;
 using GymPlusAPI.Domain.Interfaces;
 using GymPlusAPI.Infrastructure.Data;
 using GymPlusAPI.Infrastructure.Persistence;
-using GymPlusAPI.Infrastructure.Services;
+using GymPlusAPI.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -27,6 +28,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ISpreadsheetService, SpreadsheetService>();
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 

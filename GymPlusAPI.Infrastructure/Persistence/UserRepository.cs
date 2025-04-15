@@ -36,6 +36,8 @@ public class UserRepository : IUserRepository
 
     public async Task<IEnumerable<User>> GetAllUsersAsync() => await _context.Users.AsNoTracking().ToListAsync();
 
+    public Task<User?> GetUserByEmailAsync(string email) => _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Username == email);
+
     public async Task<User?> GetUserByIdAsync(Guid id) => await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
 
     public Task UpdateAsync(User user)

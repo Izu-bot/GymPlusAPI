@@ -1,21 +1,34 @@
 using System;
 using GymPlusAPI.Application.DTOs.User;
-using GymPlusAPI.Application.Services;
+using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Domain.Entities;
 using GymPlusAPI.Domain.Interfaces;
 
-namespace GymPlusAPI.Infrastructure.Services;
+namespace GymPlusAPI.Application.Services;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
-    public UserService(IUserRepository userRepository) => _userRepository = userRepository;
+    private readonly IPasswordHasher _passwordHasher;
+    public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
+    {
+        _userRepository = userRepository;
+        _passwordHasher = passwordHasher;
+    }
+
     public async Task<Guid> AddAsync(UserCreateDTO dto)
     {
         if (dto == null)
             throw new ArgumentNullException(nameof(dto));
         
-        var newUser = new User(dto.Username, dto.Password, dto.Name);
+        var existingUser = await _userRepository.GetUserByEmailAsync(dto.Email);
+
+        if (existingUser != null)
+            throw new Exception("Usuário já existe.");
+        
+        var hashedPassword = _passwordHasher.HashPassword(dto.Password);
+
+        var newUser = new User(dto.Email, hashedPassword, dto.Name, dto.Role);
 
         await _userRepository.AddAsync(newUser);
         return newUser.Id;
@@ -41,6 +54,20 @@ public class UserService : IUserService
             u.Password,
             u.Name
         )).ToList();
+    }
+
+    public async Task<UserViewDTO?> GetByEmailAsync(string email)
+    {
+        var user = await _userRepository.GetUserByEmailAsync(email);
+        if (user == null)
+            return null!;
+
+        return new UserViewDTO
+        (
+            user.Username,
+            user.Password,
+            user.Name
+        );
     }
 
     public async Task<UserViewDTO?> GetByIdAsync(Guid id)

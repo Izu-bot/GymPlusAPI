@@ -1,29 +1,27 @@
 using System;
 using GymPlusAPI.Application.DTOs.Spreadsheet;
 using GymPlusAPI.Application.DTOs.Workout;
-using GymPlusAPI.Application.Services;
+using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Domain.Entities;
 using GymPlusAPI.Domain.Interfaces;
-using GymPlusAPI.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
-namespace GymPlusAPI.Infrastructure.Services;
+namespace GymPlusAPI.Application.Services;
 
 public class SpreadsheetService : ISpreadsheetService
 {
     private readonly ISpreadsheetRepository _spreadsheetRepository;
-    private readonly AppDbContext _context;
-    public SpreadsheetService(ISpreadsheetRepository spreadsheetRepository, AppDbContext context)
+    // private readonly AppDbContext _context;
+    public SpreadsheetService(ISpreadsheetRepository spreadsheetRepository)
     {
         _spreadsheetRepository = spreadsheetRepository;
-        _context = context;
+        // _context = context;
     }
 
     public async Task<int> CreateAsync(SpreadsheetCreateDTO dto, Guid userId)
     {
-        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
-        if (!userExists)
-            throw new Exception("Usuário não encontrado.");
+        // var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        // if (!userExists)
+        //     throw new Exception("Usuário não encontrado.");
             
         var spreadsheet = new Spreadsheet(dto.Name, userId);
 

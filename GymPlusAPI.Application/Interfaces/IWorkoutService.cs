@@ -1,7 +1,7 @@
 using System;
 using GymPlusAPI.Application.DTOs.Workout;
 
-namespace GymPlusAPI.Application.Services;
+namespace GymPlusAPI.Application.Interfaces;
 
 public interface IWorkoutService
 {

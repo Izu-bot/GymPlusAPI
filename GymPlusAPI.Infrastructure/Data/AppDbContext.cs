@@ -34,6 +34,11 @@ public class AppDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100);
             
+            entity.Property(u => u.Role)
+                .IsRequired()
+                .HasDefaultValue("User") // Default role
+                .HasMaxLength(50);
+            
             entity.HasMany(u => u.Spreadsheets)
                 .WithOne(s => s.User)
                 .HasForeignKey(s => s.UserId)
