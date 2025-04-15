@@ -16,7 +16,7 @@ public class UserService : IUserService
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<Guid> AddAsync(UserCreateDTO dto)
+    public async Task<User> AddAsync(UserCreateDTO dto)
     {
         if (dto == null)
             throw new ArgumentNullException(nameof(dto));
@@ -31,7 +31,7 @@ public class UserService : IUserService
         var newUser = new User(dto.Email, hashedPassword, dto.Name, dto.Role);
 
         await _userRepository.AddAsync(newUser);
-        return newUser.Id;
+        return newUser;
     }
 
     public async Task DeleteAsync(Guid id)

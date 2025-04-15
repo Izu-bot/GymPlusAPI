@@ -9,7 +9,12 @@ namespace GymPlusAPI.API.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService) => _userService = userService;
+        private readonly IJwtGenerator _jwtGenerator;
+        public UserController(IUserService userService, IJwtGenerator jwtGenerator)
+        {
+            _userService = userService;
+            _jwtGenerator = jwtGenerator;
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] UserCreateDTO dto)
@@ -17,9 +22,11 @@ namespace GymPlusAPI.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var id = await _userService.AddAsync(dto);
+            var user = await _userService.AddAsync(dto);
 
-            return CreatedAtAction(nameof(GetById), new { id }, null);
+            var token = _jwtGenerator.GenerateToken(user);
+
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, new { Token = token });
         }
 
         [HttpGet("{id}")]

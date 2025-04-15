@@ -1,3 +1,4 @@
+using GymPlusAPI.Application.Auth;
 using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Application.Services;
 using GymPlusAPI.Domain.Interfaces;
@@ -29,6 +30,8 @@ builder.Services.AddScoped<ISpreadsheetService, SpreadsheetService>();
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
 
 var app = builder.Build();
 
