@@ -22,7 +22,8 @@ public class JwtGenerator : IJwtGenerator
     {
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(ClaimTypes.Role, user.Role),
         };
 
         var secret = _configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JwtSettings:Secret is not configured.");
@@ -38,8 +39,8 @@ public class JwtGenerator : IJwtGenerator
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var securityTokein = tokenHandler.CreateToken(tokenDescriptor);
+        var securityToken = tokenHandler.CreateToken(tokenDescriptor);
 
-        return tokenHandler.WriteToken(securityTokein);
+        return tokenHandler.WriteToken(securityToken);
     }
 }

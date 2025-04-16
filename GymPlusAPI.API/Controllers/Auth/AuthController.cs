@@ -20,7 +20,7 @@ namespace GymPlusAPI.API.Controllers.Auth
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
-            var user = await _authService.LoginAsync(loginDTO.Email, loginDTO.Password);
+            var user = await _authService.LoginAsync(loginDTO);
 
             if (user == null)
             {

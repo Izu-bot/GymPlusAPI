@@ -1,9 +1,11 @@
 using GymPlusAPI.Application.DTOs.Spreadsheet;
 using GymPlusAPI.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymPlusAPI.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SpreadsheetController : Controller
