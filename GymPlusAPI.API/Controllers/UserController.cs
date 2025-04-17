@@ -1,6 +1,5 @@
-using GymPlusAPI.Application.DTOs.User;
+using GymPlusAPI.Application.DTOs.Request.User;
 using GymPlusAPI.Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymPlusAPI.API.Controllers
@@ -18,30 +17,95 @@ namespace GymPlusAPI.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] UserCreateDTO dto)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var user = await _userService.AddAsync(dto);
+                var user = await _userService.AddAsync(request);
 
-            var token = _jwtGenerator.GenerateToken(user);
-
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, new { Token = token });
+                return CreatedAtAction(
+                    nameof(GetById),
+                    new { id = user.Id },
+                    user
+                    );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(Guid id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                var user = await _userService.GetByIdAsync(id);
 
-            var user = await _userService.GetByIdAsync(id);
+                if (user == null)
+                    return NotFound(new { message = "Usuário não encontrado." });
 
-            if (user == null)
-                return NotFound("Usuário não encontrado.");
-            
-            return Ok(user);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(Guid id, UpdateUserRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var user = await _userService.GetByIdAsync(id);
+
+                if (user == null)
+                    return NotFound(new { message = "Usuário não encontrado." });
+
+                await _userService.UpdateAsync(request);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                var user = await _userService.GetByIdAsync(id);
+
+                if (user == null)
+                    return NotFound(new { message = "Usuário não encontrado." });
+
+                await _userService.DeleteAsync(id);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

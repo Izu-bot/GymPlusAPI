@@ -1,13 +1,14 @@
 using System;
-using GymPlusAPI.Application.DTOs.Spreadsheet;
+using GymPlusAPI.Application.DTOs.Request.Spreadsheet;
+using GymPlusAPI.Application.DTOs.Response.Spreadsheet;
 
 namespace GymPlusAPI.Application.Interfaces;
 
 public interface ISpreadsheetService
 {
-    Task<int> CreateAsync(SpreadsheetCreateDTO dto, Guid userId);
-    Task UpdateAsync(SpreadsheetUpdateDTO dto, Guid userId);
-    Task DeleteAync(int spreadsheetId, Guid userId);
-    Task<IEnumerable<SpreadsheetViewDTO>> GetAllAsync(Guid userId);
-    Task<SpreadsheetViewDTO> GetByIdAsync(int spreadsheetId, Guid userId);
+    Task<SpreadsheetResponse> CreateAsync(CreateSpreadsheetRequest dto, Guid userId);
+    Task UpdateAsync(UpdateSpreadsheetRequest dto, Guid userId);
+    Task DeleteAsync(int spreadsheetId, Guid userId);
+    Task<IEnumerable<SpreadsheetResponse>> GetAllAsync(Guid userId);
+    Task<SpreadsheetResponse> GetByIdAsync(int spreadsheetId, Guid userId);
 }

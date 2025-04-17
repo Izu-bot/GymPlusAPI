@@ -1,8 +1,8 @@
 using System;
 
-namespace GymPlusAPI.Application.DTOs.User;
+namespace GymPlusAPI.Application.DTOs.Request.User;
 
-public record UserCreateDTO(
+public record CreateUserRequest(
     string Email,
     string Password,
     string Name,

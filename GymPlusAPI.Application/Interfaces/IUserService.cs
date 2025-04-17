@@ -1,15 +1,14 @@
-using System;
-using GymPlusAPI.Application.DTOs.User;
-using GymPlusAPI.Domain.Entities;
+using GymPlusAPI.Application.DTOs.Request.User;
+using GymPlusAPI.Application.DTOs.Response.User;
 
 namespace GymPlusAPI.Application.Interfaces;
 
 public interface IUserService
 {
-    Task<User> AddAsync(UserCreateDTO dto);
-    Task UpdateAsync(UserUpdateDTO dto);
+    Task<UserResponse> AddAsync(CreateUserRequest dto);
+    Task UpdateAsync(UpdateUserRequest dto);
     Task DeleteAsync(Guid id);
-    Task <UserViewDTO?> GetByIdAsync(Guid id);
-    Task<UserViewDTO?> GetByEmailAsync(string email);
-    Task<IEnumerable<UserViewDTO>> GetAllAsync();
+    Task <UserResponse?> GetByIdAsync(Guid id);
+    Task<UserResponse?> GetByEmailAsync(string email);
+    Task<IEnumerable<UserResponse>> GetAllAsync();
 }

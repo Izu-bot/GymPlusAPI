@@ -1,6 +1,8 @@
 using System;
-using GymPlusAPI.Application.DTOs.User;
+using GymPlusAPI.Application.DTOs.Request.User;
+using GymPlusAPI.Application.DTOs.Response.User;
 using GymPlusAPI.Application.Interfaces;
+using GymPlusAPI.Application.Validator;
 using GymPlusAPI.Domain.Entities;
 using GymPlusAPI.Domain.Interfaces;
 
@@ -16,22 +18,26 @@ public class UserService : IUserService
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<User> AddAsync(UserCreateDTO dto)
+    public async Task<UserResponse> AddAsync(CreateUserRequest dto)
     {
-        if (dto == null)
-            throw new ArgumentNullException(nameof(dto));
-        
+        Validate(dto); // Valida com Fluent Validation
         var existingUser = await _userRepository.GetUserByEmailAsync(dto.Email);
 
         if (existingUser != null)
             throw new Exception("Usuário já existe.");
-        
+
         var hashedPassword = _passwordHasher.HashPassword(dto.Password);
 
         var newUser = new User(dto.Email, hashedPassword, dto.Name, dto.Role);
 
         await _userRepository.AddAsync(newUser);
-        return newUser;
+
+        return new UserResponse
+        (
+            newUser.Id,
+            newUser.Username,
+            newUser.Name
+        );
     }
 
     public async Task DeleteAsync(Guid id)
@@ -44,57 +50,87 @@ public class UserService : IUserService
         await _userRepository.DeleteAsync(userToDelete);
     }
 
-    public async Task<IEnumerable<UserViewDTO>> GetAllAsync()
+    public async Task<IEnumerable<UserResponse>> GetAllAsync()
     {
         var users = await _userRepository.GetAllUsersAsync();
 
-        return users.Select(u => new UserViewDTO
+        return users.Select(u => new UserResponse
         (
+            u.Id,
             u.Username,
-            u.Password,
             u.Name
         )).ToList();
     }
 
-    public async Task<UserViewDTO?> GetByEmailAsync(string email)
+    public async Task<UserResponse?> GetByEmailAsync(string email)
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
         if (user == null)
             return null!;
 
-        return new UserViewDTO
+        return new UserResponse
         (
+            user.Id,
             user.Username,
-            user.Password,
             user.Name
         );
     }
 
-    public async Task<UserViewDTO?> GetByIdAsync(Guid id)
+    public async Task<UserResponse?> GetByIdAsync(Guid id)
     {
         var user = await _userRepository.GetUserByIdAsync(id);
         if (user == null)
             return null!;
 
-        return new UserViewDTO
+        return new UserResponse
         (
+            user.Id,
             user.Username,
-            user.Password,
             user.Name
         );
     }
 
-    public async Task UpdateAsync(UserUpdateDTO dto)
+public async Task UpdateAsync(UpdateUserRequest dto)
+{
+    var userToUpdate = await _userRepository.GetUserByIdAsync(dto.Id);
+
+    if (userToUpdate == null)
+        throw new Exception("Usuário não encontrado.");
+
+    bool hasChanges = false;
+
+    if (!string.IsNullOrWhiteSpace(dto.Email) && dto.Email != userToUpdate.Username)
     {
-        var userToUpdate = await _userRepository.GetUserByIdAsync(dto.Id);
+        userToUpdate.Username = dto.Email;
+        hasChanges = true;
+    }
 
-        if (userToUpdate == null)
-            throw new Exception("Usuário não encontrado.");
+    if (!string.IsNullOrWhiteSpace(dto.Password))
+    {
+        userToUpdate.Password = _passwordHasher.HashPassword(dto.Password); // se você tiver hashing
+        hasChanges = true;
+    }
 
-        userToUpdate.Username = dto.Username;
-        userToUpdate.Password = dto.Password;
+    if (!string.IsNullOrWhiteSpace(dto.Name) && dto.Name != userToUpdate.Name)
+    {
         userToUpdate.Name = dto.Name;
+        hasChanges = true;
+    }
 
+    if (hasChanges)
+    {
         await _userRepository.UpdateAsync(userToUpdate);
+    }
+}
+
+    private static void Validate(CreateUserRequest request)
+    {
+        var validate = new CreateUserRequestValidator();
+
+        var result = validate.Validate(request);
+        if (!result.IsValid)
+        {
+            throw new Exception(result.Errors.First().ErrorMessage);
+        }
     }
 }

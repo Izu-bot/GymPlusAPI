@@ -10,4 +10,8 @@
     <ProjectReference Include="../GymPlusAPI.Domain/GymPlusAPI.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.3.0" />
+  </ItemGroup>
+
 </Project>

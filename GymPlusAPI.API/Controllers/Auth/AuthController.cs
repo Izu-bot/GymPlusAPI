@@ -1,5 +1,5 @@
 using GymPlusAPI.Application.Auth;
-using GymPlusAPI.Application.DTOs.Login;
+using GymPlusAPI.Application.DTOs.Request.Login;
 using GymPlusAPI.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,18 +18,24 @@ namespace GymPlusAPI.API.Controllers.Auth
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = await _authService.LoginAsync(loginDTO);
-
-            if (user == null)
+            try
             {
-                return Unauthorized(new { message = "Invalid email or password" });
+                var user = await _authService.LoginAsync(request);
+
+                if (user == null)
+                {
+                    return Unauthorized(new { message = "Invalid email or password" });
+                }
+                return Ok(new { token = user.AccessToken });
             }
-
-            var token = _jwtGenerator.GenerateToken(user);
-
-            return Ok(new { Token = token });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
     }

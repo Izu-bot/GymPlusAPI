@@ -1,5 +1,6 @@
 using System;
-using GymPlusAPI.Application.DTOs.Workout;
+using GymPlusAPI.Application.DTOs.Request.Workout;
+using GymPlusAPI.Application.DTOs.Response.Workout;
 using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Domain.Entities;
 using GymPlusAPI.Domain.Interfaces;
@@ -16,7 +17,7 @@ public class WorkoutService : IWorkoutService
         _spreadsheetRepository = spreadsheetRepository;
     }
 
-    public async Task<int> CreateAsync(WorkoutCreateDTO dto, Guid userId)
+    public async Task<WorkoutResponse> CreateAsync(CreateWorkoutRequest dto, Guid userId)
     {
         var spreadsheet = await _spreadsheetRepository.GetSpreadsheetByIdAsync(dto.SpreadsheetId, userId);
 
@@ -34,11 +35,17 @@ public class WorkoutService : IWorkoutService
 
         await _workoutRepository.AddAsync(workout);
 
-        return workout.Id;
+        return new WorkoutResponse(
+            workout.Id,
+            workout.Name,
+            workout.Reps,
+            workout.Series,
+            workout.Weight
+        );
     }
 
 
-    public async Task UpdateAsync(WorkoutUpdateDTO dto, Guid userId)
+    public async Task UpdateAsync(UpdateWorkoutRequest dto, Guid userId)
     {
         var workoutToUpdate = await _workoutRepository.GetWorkoutByIdAsync(dto.Id, userId) ?? throw new Exception("Exercício não encontrado.");
 
@@ -58,11 +65,11 @@ public class WorkoutService : IWorkoutService
         await _workoutRepository.DeleteAsync(workoutToDelete);
     }
 
-    public async Task<IEnumerable<WorkoutViewDTO>> GetAllAsync(Guid userId)
+    public async Task<IEnumerable<WorkoutResponse>> GetAllAsync(Guid userId)
     {
         var workouts = await _workoutRepository.GetWorkoutsByUserAsync(userId);
 
-        return workouts.Select(w => new WorkoutViewDTO(
+        return workouts.Select(w => new WorkoutResponse(
             w.Id,
             w.Name,
             w.Reps,
@@ -71,11 +78,11 @@ public class WorkoutService : IWorkoutService
         ));
     }
 
-    public async Task<WorkoutViewDTO> GetByIdAsync(int workoutId, Guid userId)
+    public async Task<WorkoutResponse> GetByIdAsync(int workoutId, Guid userId)
     {
         var workout = await _workoutRepository.GetWorkoutByIdAsync(workoutId, userId) ?? throw new Exception("Exercício não encontrado.");
 
-        return new WorkoutViewDTO(
+        return new WorkoutResponse(
             workout.Id,
             workout.Name,
             workout.Reps,
@@ -84,11 +91,11 @@ public class WorkoutService : IWorkoutService
         );
     }
 
-    public async Task<IEnumerable<WorkoutViewDTO>> GetWorkoutBySpreadsheetAsync(int spreadsheetId, Guid userId)
+    public async Task<IEnumerable<WorkoutResponse>> GetWorkoutBySpreadsheetAsync(int spreadsheetId, Guid userId)
     {
         var workouts = await _workoutRepository.GetWorkoutBySpreadsheetIdAsync(spreadsheetId, userId);
 
-        return workouts.Select(w => new WorkoutViewDTO(
+        return workouts.Select(w => new WorkoutResponse(
             w.Id,
             w.Name,
             w.Reps,

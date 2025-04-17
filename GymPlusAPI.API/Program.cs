@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using FluentValidation.AspNetCore;
 using GymPlusAPI.Application.Auth;
 using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Application.Services;
@@ -27,8 +28,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddControllers();
-
+    
 builder.Services.AddScoped<ISpreadsheetRepository, SpreadsheetRepository>();
 builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

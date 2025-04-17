@@ -1,8 +1,8 @@
 using System;
 
-namespace GymPlusAPI.Application.DTOs.Workout;
+namespace GymPlusAPI.Application.DTOs.Response.Workout;
 
-public record WorkoutViewDTO(
+public record WorkoutResponse(
     int Id,
     string Name,
     int Reps,
