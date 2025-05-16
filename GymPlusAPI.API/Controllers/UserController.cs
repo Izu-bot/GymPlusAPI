@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using GymPlusAPI.Application.DTOs.Request.User;
 using GymPlusAPI.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -6,15 +7,9 @@ namespace GymPlusAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : Controller
+    public class UserController(IUserService userService) : Controller
     {
-        private readonly IUserService _userService;
-        private readonly IJwtGenerator _jwtGenerator;
-        public UserController(IUserService userService, IJwtGenerator jwtGenerator)
-        {
-            _userService = userService;
-            _jwtGenerator = jwtGenerator;
-        }
+        private readonly IUserService _userService = userService;
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -40,14 +35,23 @@ namespace GymPlusAPI.API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById()
         {
             try
             {
-                var user = await _userService.GetByIdAsync(id);
+                if(!ModelState.IsValid)
+                    return NotFound(ModelState);
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                ?? User.FindFirst("sub")?.Value;
+
+                if(!Guid.TryParse(userIdClaim, out var userId))
+                    return Unauthorized();
+                
+                var user = await _userService.GetByIdAsync(userId);
 
                 if (user == null)
                     return NotFound(new { message = "Usuário não encontrado." });
@@ -64,14 +68,20 @@ namespace GymPlusAPI.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(Guid id, UpdateUserRequest request)
+        public async Task<IActionResult> Update(UpdateUserRequest request)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var user = await _userService.GetByIdAsync(id);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                  ?? User.FindFirst("sub")?.Value;
+                
+                if (!Guid.TryParse(userIdClaim, out var userId))
+                    return Unauthorized();
+                
+                var user = await _userService.GetByIdAsync(userId);
 
                 if (user == null)
                     return NotFound(new { message = "Usuário não encontrado." });
@@ -89,16 +99,22 @@ namespace GymPlusAPI.API.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete()
         {
             try
             {
-                var user = await _userService.GetByIdAsync(id);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                  ?? User.FindFirst("sub")?.Value;
+                
+                if (!Guid.TryParse(userIdClaim, out var userId))
+                    return Unauthorized();
+                
+                var user = await _userService.GetByIdAsync(userId);
 
                 if (user == null)
                     return NotFound(new { message = "Usuário não encontrado." });
 
-                await _userService.DeleteAsync(id);
+                await _userService.DeleteAsync(user.Id);
 
                 return NoContent();
             }
