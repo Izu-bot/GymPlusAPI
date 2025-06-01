@@ -100,6 +100,7 @@ internal sealed class BearerSecuritySchemeTransformer(Microsoft.AspNetCore.Authe
         {
             var requirements = new Dictionary<string, OpenApiSecurityScheme>
             {
+                // Teste
                 ["Bearer"] = new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
