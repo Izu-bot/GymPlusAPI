@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using DotNetEnv;
 using FluentValidation.AspNetCore;
 using GymPlusAPI.Application.Auth;
 using GymPlusAPI.Application.Interfaces;
@@ -26,11 +27,22 @@ builder.Services.AddCors(options => {
         });
 });
 
+#region load variables .env
+
+Env.Load();
+
+var host = Environment.GetEnvironmentVariable("DB_HOST");
+var port = Environment.GetEnvironmentVariable("PORT");
+var user = Environment.GetEnvironmentVariable("DB_USER");
+var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
+var name = Environment.GetEnvironmentVariable("DB_NAME");
+#endregion
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 
-var connectionString = builder.Configuration.GetConnectionString("databaseConnection");
+var connectionString = $"Host={host};Port={port};Pooling=true;Database={name};User Id={user};Password={password};";
 var jwtKey = builder.Configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JWT Key is not configured.");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -116,7 +128,7 @@ internal sealed class BearerSecuritySchemeTransformer(Microsoft.AspNetCore.Authe
             {
                 operation.Value.Security.Add(new OpenApiSecurityRequirement
                 {
-                    [new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = "Bearer", Type = ReferenceType.SecurityScheme } }] = Array.Empty<string>()
+                    [new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = "Bearer", Type = ReferenceType.SecurityScheme } }] = []
                 });
             }
         }
