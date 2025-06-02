@@ -24,33 +24,6 @@ config.env                  # Variáveis de ambiente (conexão com banco)
 Dockerfile                  # Build e execução via Docker
 ```
 
-## Variáveis de Ambiente
-
-Crie um arquivo `config.env` na raiz do projeto com as seguintes variáveis:
-
-```
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=gymplus
-DB_USER=postgres
-DB_PASSWORD=postgres
-```
-
-## Como rodar com Docker
-
-1. **Build da imagem:**
-   ```sh
-   docker build -t gymplus-api .
-   ```
-
-2. **Executar o container:**
-   ```sh
-   docker run -d -p 80:80 --env-file=config.env gymplus-api
-   ```
-
-3. **Acesse a documentação:**
-   - [http://localhost/scalar/v1](http://localhost/scalar/v1)
-
 ## Endpoints principais
 
 - `POST /api/auth/login` — Login de usuário (retorna JWT)
