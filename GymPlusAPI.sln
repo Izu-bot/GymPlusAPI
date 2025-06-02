@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.Domain", "GymPlusAPI.Domain\GymPlusAPI.Domain.csproj", "{F9E121A5-B0B6-4256-BF16-F6850BD251CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.Domain", "src/GymPlusAPI.Domain\GymPlusAPI.Domain.csproj", "{F9E121A5-B0B6-4256-BF16-F6850BD251CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.Application", "GymPlusAPI.Application\GymPlusAPI.Application.csproj", "{7C17A342-9ED5-4E8F-B792-317A10E4EB1E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.Application", "src/GymPlusAPI.Application\GymPlusAPI.Application.csproj", "{7C17A342-9ED5-4E8F-B792-317A10E4EB1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.Infrastructure", "GymPlusAPI.Infrastructure\GymPlusAPI.Infrastructure.csproj", "{1E335B4B-CEE1-454D-9D8F-1980B7E80503}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.Infrastructure", "src/GymPlusAPI.Infrastructure\GymPlusAPI.Infrastructure.csproj", "{1E335B4B-CEE1-454D-9D8F-1980B7E80503}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.API", "GymPlusAPI.API\GymPlusAPI.API.csproj", "{91CE6FB1-355B-4169-B9AB-2A7AC9B75FA7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymPlusAPI.API", "src/GymPlusAPI.API\GymPlusAPI.API.csproj", "{91CE6FB1-355B-4169-B9AB-2A7AC9B75FA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
