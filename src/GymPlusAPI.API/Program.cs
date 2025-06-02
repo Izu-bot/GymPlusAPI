@@ -32,7 +32,7 @@ builder.Services.AddCors(options => {
 Env.Load("../../config.env");
 
 var host = Environment.GetEnvironmentVariable("DB_HOST");
-var port = Environment.GetEnvironmentVariable("PORT");
+var port = Environment.GetEnvironmentVariable("DB_PORT");
 var user = Environment.GetEnvironmentVariable("DB_USER");
 var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
 var name = Environment.GetEnvironmentVariable("DB_NAME");
@@ -90,11 +90,11 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 
-    app.MapGet("/", context =>
-    {
-        context.Response.Redirect("scalar/v1");
-        return Task.CompletedTask;
-    });
+    // app.MapGet("/", context =>
+    // {
+    //     context.Response.Redirect("scalar/v1");
+    //     return Task.CompletedTask;
+    // });
 }
 app.UseRouting();
 app.UseAuthentication();
