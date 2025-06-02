@@ -9,8 +9,8 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        Env.Load();
-
+        Env.Load("../../config.env");
+        
         var host = Environment.GetEnvironmentVariable("DB_HOST");
         var port = Environment.GetEnvironmentVariable("DB_PORT");
         var database = Environment.GetEnvironmentVariable("DB_NAME");

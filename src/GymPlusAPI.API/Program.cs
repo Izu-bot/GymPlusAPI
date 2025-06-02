@@ -29,7 +29,7 @@ builder.Services.AddCors(options => {
 
 #region load variables .env
 
-Env.Load();
+Env.Load("../../config.env");
 
 var host = Environment.GetEnvironmentVariable("DB_HOST");
 var port = Environment.GetEnvironmentVariable("PORT");
