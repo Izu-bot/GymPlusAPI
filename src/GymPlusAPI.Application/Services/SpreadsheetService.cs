@@ -11,19 +11,13 @@ namespace GymPlusAPI.Application.Services;
 public class SpreadsheetService : ISpreadsheetService
 {
     private readonly ISpreadsheetRepository _spreadsheetRepository;
-    // private readonly AppDbContext _context;
     public SpreadsheetService(ISpreadsheetRepository spreadsheetRepository)
     {
         _spreadsheetRepository = spreadsheetRepository;
-        // _context = context;
     }
 
     public async Task<SpreadsheetResponse> CreateAsync(CreateSpreadsheetRequest dto, Guid userId)
     {
-        // var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
-        // if (!userExists)
-        //     throw new Exception("Usuário não encontrado.");
-            
         var spreadsheet = new Spreadsheet(dto.Name, userId);
 
         await _spreadsheetRepository.AddAsync(spreadsheet);

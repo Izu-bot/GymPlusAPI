@@ -20,5 +20,6 @@ public class User
     }
 
     // Faz comunicação com planilhas
-    public List<Spreadsheet> Spreadsheets { get; set; } = []; // Usuario tem várias planilhas
+    public List<Spreadsheet> Spreadsheets { get; init; } = []; // Usuario tem várias planilhas
+    public ICollection<CustomMuscleGroup> CustomMuscleGroups { get; init; } = new List<CustomMuscleGroup>(); // Usuario tem varios grupos musculares
 }

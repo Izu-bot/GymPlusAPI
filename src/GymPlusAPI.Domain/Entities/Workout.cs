@@ -12,5 +12,5 @@ public class Workout
     
     // Referencia para a planilha
     public int SpreadsheetId { get; set; } // Fk
-    public Spreadsheet Spreadsheet { get; set; } = null!; // Referencia para a planilha
+    public Spreadsheet Spreadsheet { get; init; } = null!; // Referencia para a planilha
 }
