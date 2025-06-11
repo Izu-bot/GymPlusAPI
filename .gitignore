@@ -3,6 +3,7 @@
 
 
 # /GymPlusAPI.Infrastructure/.env
+src/GymPlusAPI.Infrastructure/Migrations
 *config.env
 *.idea
 
