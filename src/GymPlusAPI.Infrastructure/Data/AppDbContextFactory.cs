@@ -17,7 +17,9 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         var user = Environment.GetEnvironmentVariable("DB_USER");
         var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
 
-        var connectionString = $"Host={host};Port={port};Pooling=true;Database={database};User Id={user};Password={password};";
+        var connectionString =
+            $"User ID=postgres;Password=3510;Host=localhost;Port=5432;Database=GymPlus;Pooling=true;";
+        // var connectionString = $"Host={host};Port={port};Pooling=true;Database={database};User Id={user};Password={password};";
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseNpgsql(connectionString);

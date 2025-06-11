@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Spreadsheet> Spreadsheets { get; set; }
     public DbSet<Workout> Workouts { get; set; }
+    public DbSet<CustomMuscleGroup> CustomMuscleGroups { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -59,6 +60,7 @@ public class AppDbContext : DbContext
                 .WithOne(w => w.Spreadsheet)
                 .HasForeignKey(w => w.SpreadsheetId)
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete
+            
         });
 
         // Workout
@@ -82,6 +84,29 @@ public class AppDbContext : DbContext
             // Restrição para impedir nome de treino duplicado dentro da mesma planilha
             entity.HasIndex(w => new { w.Name, w.SpreadsheetId })
                 .IsUnique();
+        });
+
+        modelBuilder.Entity<CustomMuscleGroup>(entity =>
+        {
+            entity.HasKey(mg => mg.Id);
+
+            entity.Property(mg => mg.Name)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.Property(mg => mg.BitValue)
+                .IsRequired();
+            
+            entity.HasOne(mg => mg.User)
+                .WithMany(u => u.CustomMuscleGroups)
+                .HasForeignKey(mg => mg.UserId)
+                .IsRequired();
+            
+            entity.HasOne(s => s.Spreadsheet)
+                .WithMany(g => g.CustomMuscleGroups)
+                .HasForeignKey(g => g.SpreadsheetId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull); // Não remove grupos de musculos
         });
     }
 }

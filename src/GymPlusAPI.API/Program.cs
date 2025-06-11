@@ -42,7 +42,8 @@ var name = Environment.GetEnvironmentVariable("DB_NAME");
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 
-var connectionString = $"Host={host};Port={port};Pooling=true;Database={name};User Id={user};Password={password};";
+// var connectionString = $"Host={host};Port={port};Pooling=true;Database={name};User Id={user};Password={password};";
+const string connectionString = $"User ID=postgres;Password=3510;Host=localhost;Port=5432;Database=GymPlus;Pooling=true;";
 var jwtKey = builder.Configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JWT Key is not configured.");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -56,9 +57,11 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ISpreadsheetRepository, SpreadsheetRepository>();
 builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICustomMuscleGroupRepository, CustomMuscleGroupRepository>();
 builder.Services.AddScoped<ISpreadsheetService, SpreadsheetService>();
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICustomMuscleGroupService, CustomMuscleGroupService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
@@ -90,17 +93,17 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 
-    // app.MapGet("/", context =>
-    // {
-    //     context.Response.Redirect("scalar/v1");
-    //     return Task.CompletedTask;
-    // });
+    app.MapGet("/", context =>
+    {
+        context.Response.Redirect("scalar/v1");
+        return Task.CompletedTask;
+    });
 }
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.Run();
 
 internal sealed class BearerSecuritySchemeTransformer(Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
