@@ -1,9 +1,7 @@
 using System.Security.Claims;
 using GymPlusAPI.Application.DTOs.Request.CustomMuscleGroup;
-using GymPlusAPI.Application.DTOs.Response.CustomMuscleGroup;
 using GymPlusAPI.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymPlusAPI.API.Controllers;
