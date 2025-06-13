@@ -6,48 +6,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GymPlusAPI.Infrastructure.Persistence;
 
-public class UserRepository : IUserRepository
+public class UserRepository(AppDbContext context) : IUserRepository
 {
-    private readonly AppDbContext _context;
-
-    public UserRepository(AppDbContext context) => _context = context;
-
     public async Task AddAsync(User user)
     {
         if (user == null)
-        {
             throw new ArgumentNullException(nameof(user));
-        }
 
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
     }
 
     public Task DeleteAsync(User user)
     {
         if (user == null)
-        {
             throw new ArgumentNullException(nameof(user));
-        }
 
-        _context.Users.Remove(user);
-        return _context.SaveChangesAsync();
+        context.Users.Remove(user);
+        return context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<User>> GetAllUsersAsync() => await _context.Users.AsNoTracking().ToListAsync();
+    public async Task<IEnumerable<User>> GetAllUsersAsync() => await context.Users.AsNoTracking().ToListAsync();
 
-    public Task<User?> GetUserByEmailAsync(string email) => _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Username == email);
+    public Task<User?> GetUserByEmailAsync(string email) => context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Username == email);
 
-    public async Task<User?> GetUserByIdAsync(Guid id) => await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+    public async Task<User?> GetUserByIdAsync(Guid id) => await context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
 
     public Task UpdateAsync(User user)
     {
         if (user == null)
-        {
             throw new ArgumentNullException(nameof(user));
-        }
 
-        _context.Users.Update(user);
-        return _context.SaveChangesAsync();
+        context.Users.Update(user);
+        return context.SaveChangesAsync();
     }
 }
