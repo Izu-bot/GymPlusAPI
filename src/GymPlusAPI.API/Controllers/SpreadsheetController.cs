@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using GymPlusAPI.API.Filters;
 using GymPlusAPI.Application.DTOs.Request.Spreadsheet;
 using GymPlusAPI.Application.Interfaces;
+using GymPlusAPI.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,40 +11,35 @@ namespace GymPlusAPI.API.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class SpreadsheetController : Controller
+    [TypeFilter(typeof(CustomExceptionFilter))]
+    public class SpreadsheetController(ISpreadsheetService spreadsheetService) : ControllerBase
     {
-        private readonly ISpreadsheetService _spreadsheetService;
 
-        public SpreadsheetController(ISpreadsheetService spreadsheetService)
+        private Guid GetClaimUserIdFormClaims()
         {
-            _spreadsheetService = spreadsheetService;
-        }
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? User.FindFirst("sub")?.Value;
 
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                throw new EntityNotFoundException("Usuário não autenticado corretamente");
+            
+            return userId;
+        }
+        
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Create([FromBody] CreateSpreadsheetRequest request)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var userId = GetClaimUserIdFormClaims();
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                               ?? User.FindFirst("sub")?.Value;
+            var spreadsheet = await spreadsheetService.CreateAsync(request, userId);
 
-                if (!Guid.TryParse(userIdClaim, out var userId))
-                    return Unauthorized();
-
-                var spreadsheet = await _spreadsheetService.CreateAsync(request, userId);
-
-                return CreatedAtAction(nameof(GetByid), new { id = spreadsheet.Id }, spreadsheet);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return CreatedAtAction(nameof(GetByid), new { id = spreadsheet.Id }, spreadsheet);
 
         }
 
@@ -52,28 +49,14 @@ namespace GymPlusAPI.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetByid(int id)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return NotFound(ModelState);
+            if (!ModelState.IsValid)
+                return NotFound(ModelState);
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                               ?? User.FindFirst("sub")?.Value;
+            var userId = GetClaimUserIdFormClaims();
+            
+            var spreadsheet = await spreadsheetService.GetByIdAsync(id, userId);
 
-                if (!Guid.TryParse(userIdClaim, out var userId))
-                    return Unauthorized();
-
-                var spreadsheet = await _spreadsheetService.GetByIdAsync(id, userId);
-
-                if (spreadsheet == null)
-                    return NotFound("Planilha não encontrada.");
-
-                return Ok(spreadsheet);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return Ok(spreadsheet);
         }
 
         [HttpGet]
@@ -82,27 +65,14 @@ namespace GymPlusAPI.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var userId = GetClaimUserIdFormClaims();
+            
+            var spreadsheets = await spreadsheetService.GetAllAsync(userId);
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                               ?? User.FindFirst("sub")?.Value;
-                if (!Guid.TryParse(userIdClaim, out var userId))
-                    return Unauthorized();
-
-                var spreadsheets = await _spreadsheetService.GetAllAsync(userId);
-
-                if (spreadsheets == null || !spreadsheets.Any())
-                    return NotFound("Nenhuma planilha encontrada.");
-
-                return Ok(spreadsheets);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return Ok(spreadsheets);
         }
 
         [HttpPut("{id}")]
@@ -112,29 +82,14 @@ namespace GymPlusAPI.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateSpreadsheetRequest request)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var userId = GetClaimUserIdFormClaims();
+            
+            await spreadsheetService.UpdateAsync(request, userId);
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                                ?? User.FindFirst("sub")?.Value;
-                if (!Guid.TryParse(userIdClaim, out var userId))
-                    return Unauthorized();
-
-                var spreadsheet = await _spreadsheetService.GetByIdAsync(id, userId);
-
-                if (spreadsheet == null)
-                    return NotFound("Planilha não encontrada.");
-
-                await _spreadsheetService.UpdateAsync(request, userId);
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
@@ -143,29 +98,14 @@ namespace GymPlusAPI.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var userId = GetClaimUserIdFormClaims();
+                
+            await spreadsheetService.DeleteAsync(id, userId);
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                                ?? User.FindFirst("sub")?.Value;
-                if (!Guid.TryParse(userIdClaim, out var userId))
-                    return Unauthorized();
-
-                var spreadsheet = await _spreadsheetService.GetByIdAsync(id, userId);
-
-                if (spreadsheet == null)
-                    return NotFound("Planilha não encontrada.");
-
-                await _spreadsheetService.DeleteAsync(id, userId);
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return NoContent();
         }
     }
 }

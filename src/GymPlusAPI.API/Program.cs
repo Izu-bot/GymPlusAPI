@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using DotNetEnv;
 using FluentValidation.AspNetCore;
+using GymPlusAPI.API.Filters;
 using GymPlusAPI.Application.Auth;
 using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Application.Services;
@@ -19,9 +20,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAllOrigins",
-        builder =>
+        policy =>
         {
-            builder.AllowAnyOrigin()
+            policy.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
@@ -52,8 +53,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddControllers();
-    
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<CustomExceptionFilter>();
+});
+builder.Services.AddScoped<CustomExceptionFilter>();
+
 builder.Services.AddScoped<ISpreadsheetRepository, SpreadsheetRepository>();
 builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
