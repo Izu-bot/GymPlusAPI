@@ -8,7 +8,6 @@ public interface IUserService
     Task<UserResponse> AddAsync(CreateUserRequest dto);
     Task UpdateAsync(UpdateUserRequest dto);
     Task DeleteAsync(Guid id);
-    Task <UserResponse?> GetByIdAsync(Guid id);
-    Task<UserResponse?> GetByEmailAsync(string email);
+    Task <UserResponse> GetByIdAsync(Guid id);
     Task<IEnumerable<UserResponse>> GetAllAsync();
 }
