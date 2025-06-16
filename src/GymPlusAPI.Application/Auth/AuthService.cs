@@ -1,7 +1,6 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using GymPlusAPI.Application.DTOs.Request.Login;
 using GymPlusAPI.Application.DTOs.Response.Login;
+using GymPlusAPI.Application.Exceptions;
 using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Domain.Interfaces;
 
@@ -12,10 +11,11 @@ public class AuthService(IUserRepository userRepository, IPasswordHasher passwor
 {
     public async Task<LoginResponse?> LoginAsync(LoginRequest login)
     {
-        var user = await userRepository.GetUserByEmailAsync(login.Email);
+        var user = await userRepository.GetUserByEmailAsync(login.Email) ??
+           throw new UserNotFoundException(login.Email);
 
-        if (user is null || !passwordHasher.VerifyHashedPassword(user.Password, login.Password))
-           throw new ValidationException("Email ou senha invalidos");
+        if (!passwordHasher.VerifyHashedPassword(user.Password, login.Password))
+           throw new InvalidCredentialsException();
 
         return new LoginResponse(jwtGenerator.GenerateToken(user));
     }

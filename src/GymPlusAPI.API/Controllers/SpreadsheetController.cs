@@ -21,7 +21,7 @@ namespace GymPlusAPI.API.Controllers
                 ?? User.FindFirst("sub")?.Value;
 
             if (!Guid.TryParse(userIdClaim, out var userId))
-                throw new EntityNotFoundException("Usuário não autenticado corretamente");
+                throw new UnauthorizedAccessException();
             
             return userId;
         }

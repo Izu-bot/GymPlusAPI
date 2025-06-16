@@ -13,6 +13,18 @@ namespace GymPlusAPI.API.Controllers
     [TypeFilter(typeof(CustomExceptionFilter))]
     public class WorkoutController(IWorkoutService workoutService) : Controller
     {
+
+        private Guid GetClaimUserIdFormClaims()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                              ?? User.FindFirst("sub")?.Value;
+            
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                throw new UnauthorizedAccessException();
+
+            return userId;
+        }
+        
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -21,11 +33,7 @@ namespace GymPlusAPI.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
+            var userId = GetClaimUserIdFormClaims();
 
             var workout = await workoutService.CreateAsync(request, userId);
 
@@ -41,11 +49,7 @@ namespace GymPlusAPI.API.Controllers
             if (!ModelState.IsValid)
                 return NotFound(ModelState);
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
+            var userId = GetClaimUserIdFormClaims();
 
             var workout = await workoutService.GetByIdAsync(id, userId);
 
@@ -61,11 +65,7 @@ namespace GymPlusAPI.API.Controllers
             if (!ModelState.IsValid)
                 return NotFound(ModelState);
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
+            var userId = GetClaimUserIdFormClaims();
 
             var workouts = await workoutService.GetAllAsync(userId);
 
@@ -82,11 +82,7 @@ namespace GymPlusAPI.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
+            var userId = GetClaimUserIdFormClaims();
 
             var workout = await workoutService.GetByIdAsync(id, userId);
 
@@ -104,13 +100,8 @@ namespace GymPlusAPI.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
-                
+            
+            var userId = GetClaimUserIdFormClaims();
 
             await workoutService.DeleteAsync(id, userId);
 

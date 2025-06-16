@@ -33,7 +33,7 @@ public class SpreadsheetService(ISpreadsheetRepository spreadsheetRepository) : 
     public async Task UpdateAsync(UpdateSpreadsheetRequest dto, Guid userId)
     {
         var spreadsheetToUpdate = await spreadsheetRepository.GetSpreadsheetByIdAsync(dto.Id, userId)
-                                  ?? throw new EntityNotFoundException("Não exite Planilha para atualizar");
+                                  ?? throw new EntityNotFoundException("Planilha");
 
         spreadsheetToUpdate.Name = dto.Name;
         await spreadsheetRepository.UpdateAsync(spreadsheetToUpdate);
@@ -42,7 +42,7 @@ public class SpreadsheetService(ISpreadsheetRepository spreadsheetRepository) : 
     public async Task DeleteAsync(int spreadsheetId, Guid userId)
     {
         var spreadsheetToDelete = await spreadsheetRepository.GetSpreadsheetByIdAsync(spreadsheetId, userId)
-            ?? throw new EntityNotFoundException("Não existe Planilhas para excluir");
+            ?? throw new EntityNotFoundException("Planilha");
 
         await spreadsheetRepository.DeleteAsync(spreadsheetToDelete);
     }
@@ -52,7 +52,7 @@ public class SpreadsheetService(ISpreadsheetRepository spreadsheetRepository) : 
         var spreadsheets = (await spreadsheetRepository.GetSpreadsheetsByUserAsync(userId)).ToList();
         
         if(!spreadsheets.Any())
-            throw new EntityNotFoundException("Nenhuma Planilha encontrada");
+            throw new EntityNotFoundException("Planilha");
         
         return spreadsheets.Select(s => new SpreadsheetResponse(
             s.Id,
@@ -70,7 +70,7 @@ public class SpreadsheetService(ISpreadsheetRepository spreadsheetRepository) : 
     public async Task<SpreadsheetResponse> GetByIdAsync(int spreadsheetId, Guid userId)
     {        
         var spreadsheet = await spreadsheetRepository.GetSpreadsheetByIdAsync(spreadsheetId, userId)
-            ?? throw new EntityNotFoundException("Não existe essa Planilha");       
+            ?? throw new EntityNotFoundException("Planilha");       
 
         return new SpreadsheetResponse(
             spreadsheet.Id,

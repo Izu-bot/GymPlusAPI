@@ -16,7 +16,7 @@ public class WorkoutService(IWorkoutRepository workoutRepository, ISpreadsheetRe
         var spreadsheet = await spreadsheetRepository.GetSpreadsheetByIdAsync(dto.SpreadsheetId, userId);
 
         if (spreadsheet == null)
-            throw new EntityNotFoundException("Planilha não encontrada.");
+            throw new EntityNotFoundException("Planilha");
 
         var workout = new Workout
         {
@@ -41,7 +41,7 @@ public class WorkoutService(IWorkoutRepository workoutRepository, ISpreadsheetRe
 
     public async Task UpdateAsync(UpdateWorkoutRequest dto, Guid userId)
     {
-        var workoutToUpdate = await workoutRepository.GetWorkoutByIdAsync(dto.Id, userId) ?? throw new EntityNotFoundException("Exercício não encontrado.");
+        var workoutToUpdate = await workoutRepository.GetWorkoutByIdAsync(dto.Id, userId) ?? throw new EntityNotFoundException("Exercício");
 
         workoutToUpdate.Name = dto.Name;
         workoutToUpdate.Reps = dto.Reps;
@@ -54,7 +54,7 @@ public class WorkoutService(IWorkoutRepository workoutRepository, ISpreadsheetRe
 
     public async Task DeleteAsync(int workoutId, Guid userId)
     {
-        var workoutToDelete = await workoutRepository.GetWorkoutByIdAsync(workoutId, userId) ?? throw new EntityNotFoundException("Exercício não encontrado.");
+        var workoutToDelete = await workoutRepository.GetWorkoutByIdAsync(workoutId, userId) ?? throw new EntityNotFoundException("Exercício");
 
         await workoutRepository.DeleteAsync(workoutToDelete);
     }
@@ -64,7 +64,7 @@ public class WorkoutService(IWorkoutRepository workoutRepository, ISpreadsheetRe
         var workouts = (await workoutRepository.GetWorkoutsByUserAsync(userId)).ToList();
 
         if (!workouts.Any())
-            throw new EntityNotFoundException("Não há exercicios");
+            throw new EntityNotFoundException("Exercício");
         
         return workouts.Select(w => new WorkoutResponse(
             w.Id,
@@ -77,7 +77,7 @@ public class WorkoutService(IWorkoutRepository workoutRepository, ISpreadsheetRe
 
     public async Task<WorkoutResponse> GetByIdAsync(int workoutId, Guid userId)
     {
-        var workout = await workoutRepository.GetWorkoutByIdAsync(workoutId, userId) ?? throw new EntityNotFoundException("Exercício não encontrado.");
+        var workout = await workoutRepository.GetWorkoutByIdAsync(workoutId, userId) ?? throw new EntityNotFoundException("Exercício");
 
         return new WorkoutResponse(
             workout.Id,

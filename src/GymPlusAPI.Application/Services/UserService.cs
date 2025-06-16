@@ -1,5 +1,7 @@
+using System.Security.Authentication;
 using GymPlusAPI.Application.DTOs.Request.User;
 using GymPlusAPI.Application.DTOs.Response.User;
+using GymPlusAPI.Application.Exceptions;
 using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Application.Validator;
 using GymPlusAPI.Domain.Entities;
@@ -17,7 +19,7 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
         var existingUser = await userRepository.GetUserByEmailAsync(dto.Email);
 
         if (existingUser != null)
-            throw new UserExistsException(existingUser.Username);
+            throw new UserExistsException();
 
         var hashedPassword = passwordHasher.HashPassword(dto.Password);
 
@@ -35,7 +37,7 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
 
     public async Task DeleteAsync(Guid id)
     {
-        var userToDelete = await userRepository.GetUserByIdAsync(id) ?? throw new EntityNotFoundException("Este usuário");
+        var userToDelete = await userRepository.GetUserByIdAsync(id) ?? throw new EntityNotFoundException("Usuário");
 
         await userRepository.DeleteAsync(userToDelete);
     }
@@ -44,7 +46,7 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
     {
         var users = (await userRepository.GetAllUsersAsync()).ToList();
 
-        if (!users.Any()) throw new EntityNotFoundException("Não há nenhum Usuário cadastrado.");
+        if (!users.Any()) throw new EntityNotFoundException("Usuário");
 
         return users.Select(u => new UserResponse
         (
@@ -58,7 +60,7 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
     {
         var user = await userRepository.GetUserByIdAsync(id);
         if (user == null)
-            throw new EntityNotFoundException("Esse Usuário não existe.");
+            throw new EntityNotFoundException("Usuário");
 
         return new UserResponse
         (
@@ -73,7 +75,7 @@ public async Task UpdateAsync(UpdateUserRequest dto)
     var userToUpdate = await userRepository.GetUserByIdAsync(dto.Id);
 
     if (userToUpdate == null)
-        throw new EntityNotFoundException("Usuário não encontrado.");
+        throw new EntityNotFoundException("Usuário");
 
     bool hasChanges = false;
 
@@ -85,7 +87,7 @@ public async Task UpdateAsync(UpdateUserRequest dto)
 
     if (!string.IsNullOrWhiteSpace(dto.Password))
     {
-        userToUpdate.Password = passwordHasher.HashPassword(dto.Password); // se você tiver hashing
+        userToUpdate.Password = passwordHasher.HashPassword(dto.Password);
         hasChanges = true;
     }
 
@@ -108,7 +110,7 @@ public async Task UpdateAsync(UpdateUserRequest dto)
         var result = validate.Validate(request);
         if (!result.IsValid)
         {
-            throw new ValidationException(result.Errors.First().ErrorMessage);
+            throw new InvalidCredentialException();
         }
     }
 }
