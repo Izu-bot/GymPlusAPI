@@ -10,8 +10,8 @@ public class CreateSpreadsheetRequestValidator : AbstractValidator<CreateSpreads
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage("Name is required.")
+            .WithMessage("O nome é obrigatório.")
             .MinimumLength(5)
-            .WithMessage("Name must be at least 5 characters long.");
+            .WithMessage("O nome de uma planilha deve ter mais de 5 caracteres.");
     }
 }
