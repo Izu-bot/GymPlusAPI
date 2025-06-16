@@ -10,32 +10,32 @@ public class CreateWorkoutRequestValidator : AbstractValidator<CreateWorkoutRequ
     {
         RuleFor(w => w.Name)
             .NotEmpty()
-            .WithMessage("Name is required.")
+            .WithMessage("O nome é obrigatório.")
             .MinimumLength(5)
-            .WithMessage("Name must be at least 5 characters long.");
+            .WithMessage("O nome deve possuir no minimo 5 caracteres.");
 
         RuleFor(w => w.Reps)
             .NotEmpty()
-            .WithMessage("Reps is required.")
+            .WithMessage("Números de repetição é obrigátorio.")
             .GreaterThan(0)
-            .WithMessage("Reps must be greater than 0.");
+            .WithMessage("As repetições deve ser maior que 0.");
 
         RuleFor(w => w.Series)
             .NotEmpty()
-            .WithMessage("Reps is required.")
+            .WithMessage("O número de series é obrigatório.")
             .GreaterThan(0)
-            .WithMessage("Reps must be greater than 0.");
+            .WithMessage("As series deve ser maior que 0.");
 
         RuleFor(w => w.Weight)
             .NotEmpty()
-            .WithMessage("Weight is required.")
+            .WithMessage("O peso é obrigatório.")
             .GreaterThan(0)
-            .WithMessage("Weight must be greater than 0.");
+            .WithMessage("O peso deve ser maior que 0.");
 
         RuleFor(w => w.SpreadsheetId)
             .NotEmpty()
-            .WithMessage("SpreadsheetId is required.")
+            .WithMessage("Você deve associar o treino a uma planilha.")
             .GreaterThan(0)
-            .WithMessage("The workout must be associated with a workout sheet greater than 0");
+            .WithMessage("Associe a um treio que exista.");
     }
 }
