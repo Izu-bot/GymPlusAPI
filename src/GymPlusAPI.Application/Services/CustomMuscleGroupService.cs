@@ -54,7 +54,7 @@ public class CustomMuscleGroupService(ICustomMuscleGroupRepository repository) :
 
     public async Task RemoveCustomGroup(int customMucleGroup, Guid userId)
     {
-        var mucleGroupToRemove = await repository.GetById(customMucleGroup, userId) ?? throw new EntityNotFoundException("Grupo muscular não existe");
+        var mucleGroupToRemove = await repository.GetById(customMucleGroup, userId) ?? throw new EntityNotFoundException("Grupo muscular");
         
         await repository.Remove(mucleGroupToRemove);
     }
@@ -73,7 +73,7 @@ public class CustomMuscleGroupService(ICustomMuscleGroupRepository repository) :
     {
         var muscleGroup =  await repository.GetById(id,  userId);
         
-        if (muscleGroup == null) throw new InvalidOperationException($"Grupo {id} não existe");
+        if (muscleGroup == null) throw new EntityNotFoundException("Grupo Muscular");
 
         return new CustomMuscleGroupResponse(
             muscleGroup.Id,

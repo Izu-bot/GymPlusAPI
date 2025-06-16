@@ -1,3 +1,4 @@
+using GymPlusAPI.Application.Exceptions;
 using GymPlusAPI.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -10,10 +11,26 @@ public class CustomExceptionFilter(ILogger<CustomExceptionFilter> logger) : IExc
     {
         var (statusCode, message) = context.Exception switch
         {
-            EntityNotFoundException entityNotFoundException => (StatusCodes.Status404NotFound, entityNotFoundException.Message),
-            ValidationException validationException => (StatusCodes.Status400BadRequest, validationException.Message),
-            UserExistsException userExistsException => (StatusCodes.Status409Conflict, userExistsException.Message),
-            ApplicationException appException => (StatusCodes.Status400BadRequest, appException.Message),
+            EntityNotFoundException entityNotFoundException => (
+                StatusCodes.Status404NotFound,
+                entityNotFoundException.Message
+            ),
+            InvalidCredentialsException invalidCredentialsException => (
+                StatusCodes.Status400BadRequest,
+                invalidCredentialsException.Message
+            ),
+            UserExistsException userExistsException => (
+                StatusCodes.Status409Conflict,
+                userExistsException.Message
+            ),
+            UserNotFoundException userNotFoundException => (
+                StatusCodes.Status404NotFound,
+                userNotFoundException.Message
+            ),
+            ApplicationException appException => (
+                StatusCodes.Status400BadRequest,
+                appException.Message
+            ),
             _ => (StatusCodes.Status500InternalServerError, "Um erro interno ocorreu. Por favor, tente novamente mais tarde.")
         };
 

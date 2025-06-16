@@ -13,6 +13,19 @@ namespace GymPlusAPI.API.Controllers;
 [TypeFilter(typeof(CustomExceptionFilter))]
 public class CustomMuscleGroupController(ICustomMuscleGroupService customMuscleGroupService) : Controller
 {
+
+
+    private Guid GetClaimUserIdFormClaims()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("sub")?.Value;
+        
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            throw new UnauthorizedAccessException();
+        
+        return userId;
+    }
+    
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -22,10 +35,7 @@ public class CustomMuscleGroupController(ICustomMuscleGroupService customMuscleG
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-
-            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+            var userId = GetClaimUserIdFormClaims();
 
             var customMuscleGroup = await customMuscleGroupService.AddCustomGroup(request, userId);
 
@@ -42,10 +52,7 @@ public class CustomMuscleGroupController(ICustomMuscleGroupService customMuscleG
             if (!ModelState.IsValid)
                 return NotFound(ModelState);
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-
-            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+            var userId = GetClaimUserIdFormClaims();
 
             var customMuscleGroup = await customMuscleGroupService.GetById(id, userId);
 
@@ -61,10 +68,7 @@ public class CustomMuscleGroupController(ICustomMuscleGroupService customMuscleG
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var userClaimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-
-            if (!Guid.TryParse(userClaimId, out var userId)) return Unauthorized();
+            var userId = GetClaimUserIdFormClaims();
 
             var customMuscleGroups = await customMuscleGroupService.GetAll(userId);
 
@@ -81,10 +85,7 @@ public class CustomMuscleGroupController(ICustomMuscleGroupService customMuscleG
             if (!ModelState.IsValid)
                 return BadRequest();
         
-            var userClaimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-        
-            if (!Guid.TryParse(userClaimId, out var userId)) return Unauthorized();
+            var userId = GetClaimUserIdFormClaims();
 
             await customMuscleGroupService.UpdateCustomGroup(request, userId);
 
@@ -101,10 +102,7 @@ public class CustomMuscleGroupController(ICustomMuscleGroupService customMuscleG
             if (!ModelState.IsValid)
                     return BadRequest();
 
-            var userClaimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-            
-            if (!Guid.TryParse(userClaimId, out var userId)) return Unauthorized();
+            var userId = GetClaimUserIdFormClaims();
 
             var muscleGroupToRemove = await customMuscleGroupService.GetById(id, userId);
             

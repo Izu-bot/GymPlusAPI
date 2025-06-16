@@ -17,8 +17,8 @@ namespace GymPlusAPI.API.Controllers
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                               ?? User.FindFirst("sub")?.Value;
-            
-            if (!Guid.TryParse(userIdClaim, out var userId)) throw new UnauthorizedAccessException(); // Lançar minha exceção
+
+            if (!Guid.TryParse(userIdClaim, out var userId)) throw new UnauthorizedAccessException();
             return userId;
         }
         
