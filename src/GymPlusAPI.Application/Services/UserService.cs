@@ -1,36 +1,31 @@
-using System;
+using System.Security.Authentication;
 using GymPlusAPI.Application.DTOs.Request.User;
 using GymPlusAPI.Application.DTOs.Response.User;
+using GymPlusAPI.Application.Exceptions;
 using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Application.Validator;
 using GymPlusAPI.Domain.Entities;
+using GymPlusAPI.Domain.Exceptions;
 using GymPlusAPI.Domain.Interfaces;
 
 namespace GymPlusAPI.Application.Services;
 
-public class UserService : IUserService
+public class UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
+    : IUserService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasher _passwordHasher;
-    public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
-    {
-        _userRepository = userRepository;
-        _passwordHasher = passwordHasher;
-    }
-
     public async Task<UserResponse> AddAsync(CreateUserRequest dto)
     {
-        Validate(dto); // Valida com Fluent Validation
-        var existingUser = await _userRepository.GetUserByEmailAsync(dto.Email);
+        Validate(dto);
+        var existingUser = await userRepository.GetUserByEmailAsync(dto.Email);
 
         if (existingUser != null)
-            throw new Exception("Usuário já existe.");
+            throw new UserExistsException();
 
-        var hashedPassword = _passwordHasher.HashPassword(dto.Password);
+        var hashedPassword = passwordHasher.HashPassword(dto.Password);
 
         var newUser = new User(dto.Email, hashedPassword, dto.Name, dto.Role);
 
-        await _userRepository.AddAsync(newUser);
+        await userRepository.AddAsync(newUser);
 
         return new UserResponse
         (
@@ -42,17 +37,16 @@ public class UserService : IUserService
 
     public async Task DeleteAsync(Guid id)
     {
-        var userToDelete = await _userRepository.GetUserByIdAsync(id);
+        var userToDelete = await userRepository.GetUserByIdAsync(id) ?? throw new EntityNotFoundException("Usuário");
 
-        if (userToDelete == null)
-            throw new Exception("Usuário não encontrado.");
-
-        await _userRepository.DeleteAsync(userToDelete);
+        await userRepository.DeleteAsync(userToDelete);
     }
 
     public async Task<IEnumerable<UserResponse>> GetAllAsync()
     {
-        var users = await _userRepository.GetAllUsersAsync();
+        var users = (await userRepository.GetAllUsersAsync()).ToList();
+
+        if (!users.Any()) throw new EntityNotFoundException("Usuário");
 
         return users.Select(u => new UserResponse
         (
@@ -62,25 +56,11 @@ public class UserService : IUserService
         )).ToList();
     }
 
-    public async Task<UserResponse?> GetByEmailAsync(string email)
+    public async Task<UserResponse> GetByIdAsync(Guid id)
     {
-        var user = await _userRepository.GetUserByEmailAsync(email);
+        var user = await userRepository.GetUserByIdAsync(id);
         if (user == null)
-            return null!;
-
-        return new UserResponse
-        (
-            user.Id,
-            user.Username,
-            user.Name
-        );
-    }
-
-    public async Task<UserResponse?> GetByIdAsync(Guid id)
-    {
-        var user = await _userRepository.GetUserByIdAsync(id);
-        if (user == null)
-            return null!;
+            throw new EntityNotFoundException("Usuário");
 
         return new UserResponse
         (
@@ -92,10 +72,10 @@ public class UserService : IUserService
 
 public async Task UpdateAsync(UpdateUserRequest dto)
 {
-    var userToUpdate = await _userRepository.GetUserByIdAsync(dto.Id);
+    var userToUpdate = await userRepository.GetUserByIdAsync(dto.Id);
 
     if (userToUpdate == null)
-        throw new Exception("Usuário não encontrado.");
+        throw new EntityNotFoundException("Usuário");
 
     bool hasChanges = false;
 
@@ -107,7 +87,7 @@ public async Task UpdateAsync(UpdateUserRequest dto)
 
     if (!string.IsNullOrWhiteSpace(dto.Password))
     {
-        userToUpdate.Password = _passwordHasher.HashPassword(dto.Password); // se você tiver hashing
+        userToUpdate.Password = passwordHasher.HashPassword(dto.Password);
         hasChanges = true;
     }
 
@@ -119,7 +99,7 @@ public async Task UpdateAsync(UpdateUserRequest dto)
 
     if (hasChanges)
     {
-        await _userRepository.UpdateAsync(userToUpdate);
+        await userRepository.UpdateAsync(userToUpdate);
     }
 }
 
@@ -130,7 +110,7 @@ public async Task UpdateAsync(UpdateUserRequest dto)
         var result = validate.Validate(request);
         if (!result.IsValid)
         {
-            throw new Exception(result.Errors.First().ErrorMessage);
+            throw new InvalidCredentialException();
         }
     }
 }
