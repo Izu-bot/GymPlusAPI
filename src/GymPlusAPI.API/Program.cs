@@ -1,10 +1,12 @@
 using System.Security.Claims;
 using DotNetEnv;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using GymPlusAPI.API.Filters;
 using GymPlusAPI.Application.Auth;
 using GymPlusAPI.Application.Interfaces;
 using GymPlusAPI.Application.Services;
+using GymPlusAPI.Application.Validator;
 using GymPlusAPI.Domain.Interfaces;
 using GymPlusAPI.Infrastructure.Data;
 using GymPlusAPI.Infrastructure.Persistence;
@@ -53,6 +55,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<ValidationAsemblyMarker>();
+
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<CustomExceptionFilter>();
