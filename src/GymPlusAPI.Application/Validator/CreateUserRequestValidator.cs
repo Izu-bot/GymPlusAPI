@@ -10,24 +10,24 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
     {
         RuleFor(u => u.Email)
             .NotEmpty()
-            .WithMessage("Email is required.")
+            .WithMessage("Email é obrigatório.")
             .EmailAddress()
-            .WithMessage("Invalid email format.");
+            .WithMessage("Email no formato inválido.");
         
         RuleFor(u => u.Password)
             .NotEmpty()
-            .WithMessage("Password is required.");
+            .WithMessage("A senha é obrigatório.");
         When(u => string.IsNullOrEmpty(u.Password) == false, () =>
         {
             RuleFor(u => u.Password)
             .MinimumLength(8)
-            .WithMessage("Password must be at least 8 characters long.");
+            .WithMessage("A senha deve contar no minimo 8 caracteres.");
         });
 
         RuleFor(u => u.Name)
             .NotEmpty()
-            .WithMessage("Name is required.")
-            .MinimumLength(2)
-            .WithMessage("Name must be at least 2 characters long.");
+            .WithMessage("O nome é obrigatório.")
+            .MinimumLength(3)
+            .WithMessage("O nome deve no minimo conter 3 caracteres.");
     }
 }
