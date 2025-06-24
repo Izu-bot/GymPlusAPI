@@ -11,4 +11,5 @@ public interface ISpreadsheetService
     Task DeleteAsync(int spreadsheetId, Guid userId);
     Task<IEnumerable<SpreadsheetResponse>> GetAllAsync(Guid userId);
     Task<SpreadsheetResponse> GetByIdAsync(int spreadsheetId, Guid userId);
+    Task <IEnumerable<SpreadsheetResponse>> TodaySpreadsheet(Guid userId);
 }
