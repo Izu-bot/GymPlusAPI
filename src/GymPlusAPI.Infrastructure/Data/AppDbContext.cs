@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
     public DbSet<Spreadsheet> Spreadsheets { get; set; }
     public DbSet<Workout> Workouts { get; set; }
     public DbSet<CustomMuscleGroup> CustomMuscleGroups { get; set; }
+    public DbSet<TrainingCompleted> TrainingCompleteds { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -60,7 +61,19 @@ public class AppDbContext : DbContext
                 .WithOne(w => w.Spreadsheet)
                 .HasForeignKey(w => w.SpreadsheetId)
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete
+
+            entity.Property(s => s.Description)
+                .HasMaxLength(100);
             
+            entity.Property(s => s.IsRecurring)
+                .IsRequired();
+            
+            entity.Property(s => s.CreatedAt)
+                .IsRequired()
+                .HasColumnType("date");
+            
+            entity.Property(s => s.DaysOfWeek)
+                .IsRequired();
         });
 
         // Workout
@@ -107,6 +120,22 @@ public class AppDbContext : DbContext
                 .HasForeignKey(g => g.SpreadsheetId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull); // Não remove grupos de musculos
+        });
+
+        modelBuilder.Entity<TrainingCompleted>(entity =>
+        {
+            entity.HasKey(tc => tc.Id);
+
+            entity.Property(tc => tc.Date)
+                .IsRequired()
+                .HasColumnType("date");
+
+            entity.Property(tc => tc.IsCompleted);
+            
+            entity.HasOne(s => s.Spreadsheet)
+                .WithMany(tc => tc.TrainingCompleteds)
+                .HasForeignKey(tc => tc.SpreadsheetId)
+                .IsRequired();
         });
     }
 }

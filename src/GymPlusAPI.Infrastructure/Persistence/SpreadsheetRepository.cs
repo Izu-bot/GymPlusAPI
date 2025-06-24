@@ -1,4 +1,3 @@
-using System;
 using GymPlusAPI.Domain.Entities;
 using GymPlusAPI.Domain.Interfaces;
 using GymPlusAPI.Infrastructure.Data;
@@ -10,7 +9,7 @@ public class SpreadsheetRepository : ISpreadsheetRepository
 {
     private readonly AppDbContext _context;
     public SpreadsheetRepository(AppDbContext context) => _context = context;
-
+    
     public async Task AddAsync(Spreadsheet spreadsheet)
     {
         if (spreadsheet == null)
@@ -50,6 +49,13 @@ public class SpreadsheetRepository : ISpreadsheetRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Spreadsheet>> TodaySpreadsheet(DayOfWeek dayOfWeek, Guid userId)
+    {
+        return await _context.Spreadsheets.Where(s => s.UserId == userId && s.DaysOfWeek.Contains(dayOfWeek))
+            .AsNoTracking()
+            .ToListAsync();
+    }
+    
     public async Task UpdateAsync(Spreadsheet spreadsheet)
     {
         if (spreadsheet == null)
