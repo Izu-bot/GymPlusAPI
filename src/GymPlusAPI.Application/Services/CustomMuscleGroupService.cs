@@ -29,9 +29,7 @@ public class CustomMuscleGroupService(ICustomMuscleGroupRepository repository) :
         return new CustomMuscleGroupResponse(
             newGroup.Id,
             newGroup.Name,
-            newGroup.BitValue,
-            newGroup.UserId,
-            newGroup.SpreadsheetId
+            newGroup.BitValue
             );
     }
 
@@ -46,9 +44,7 @@ public class CustomMuscleGroupService(ICustomMuscleGroupRepository repository) :
         return new CustomMuscleGroupResponse(
             muscleGroupToUpdate.Id,
             muscleGroupToUpdate.Name,
-            muscleGroupToUpdate.BitValue,
-            muscleGroupToUpdate.UserId,
-            muscleGroupToUpdate.SpreadsheetId
+            muscleGroupToUpdate.BitValue
         );
     }
 
@@ -78,9 +74,7 @@ public class CustomMuscleGroupService(ICustomMuscleGroupRepository repository) :
         return new CustomMuscleGroupResponse(
             muscleGroup.Id,
             muscleGroup.Name,
-            muscleGroup.BitValue,
-            muscleGroup.UserId,
-            muscleGroup.SpreadsheetId
+            muscleGroup.BitValue
         );
     }
 }
