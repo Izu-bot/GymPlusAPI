@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
     public DbSet<Spreadsheet> Spreadsheets { get; set; }
     public DbSet<Workout> Workouts { get; set; }
     public DbSet<CustomMuscleGroup> CustomMuscleGroups { get; set; }
+    public DbSet<RecurrentTraining> RecurrentTrainings { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -60,7 +61,19 @@ public class AppDbContext : DbContext
                 .WithOne(w => w.Spreadsheet)
                 .HasForeignKey(w => w.SpreadsheetId)
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete
+
+            entity.Property(s => s.Description)
+                .HasMaxLength(100);
             
+            entity.Property(s => s.IsRecurring)
+                .IsRequired();
+            
+            entity.Property(s => s.CreatedAt)
+                .IsRequired()
+                .HasColumnType("date");
+            
+            entity.Property(s => s.DaysOfWeek)
+                .IsRequired();
         });
 
         // Workout
@@ -107,6 +120,32 @@ public class AppDbContext : DbContext
                 .HasForeignKey(g => g.SpreadsheetId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull); // Não remove grupos de musculos
+        });
+
+        modelBuilder.Entity<RecurrentTraining>(entity =>
+        {
+            entity.HasKey(rt => rt.Id);
+
+            entity.Property(rt => rt.Date)
+                .IsRequired()
+                .HasColumnType("date");
+            
+            entity.HasIndex(rt => new { rt.Date, rt.SpreadsheetId })
+                .IsUnique();
+
+            entity.Property(rt => rt.IsCompleted);
+
+            entity.Property(rt => rt.Observations);
+            
+            entity.HasOne(s => s.Spreadsheet)
+                .WithMany(rt => rt.RecurrentTrainings)
+                .HasForeignKey(tc => tc.SpreadsheetId)
+                .IsRequired();
+            
+            entity.HasOne(u => u.User)
+                .WithMany(rt => rt.RecurrentTrainings)
+                .HasForeignKey(rt => rt.UserId)
+                .IsRequired();
         });
     }
 }

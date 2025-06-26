@@ -11,7 +11,7 @@ namespace GymPlusAPI.API.Controllers
     [ApiController]
     [Authorize]
     [TypeFilter(typeof(CustomExceptionFilter))]
-    public class WorkoutController(IWorkoutService workoutService) : Controller
+    public class WorkoutController(IWorkoutService workoutService) : ControllerBase
     {
 
         private Guid GetClaimUserIdFormClaims()
