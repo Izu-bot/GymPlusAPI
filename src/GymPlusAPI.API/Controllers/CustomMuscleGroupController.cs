@@ -11,7 +11,7 @@ namespace GymPlusAPI.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [TypeFilter(typeof(CustomExceptionFilter))]
-public class CustomMuscleGroupController(ICustomMuscleGroupService customMuscleGroupService) : Controller
+public class CustomMuscleGroupController(ICustomMuscleGroupService customMuscleGroupService) : ControllerBase
 {
 
 

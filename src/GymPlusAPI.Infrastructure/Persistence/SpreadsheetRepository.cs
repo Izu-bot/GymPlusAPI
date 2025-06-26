@@ -1,4 +1,3 @@
-using System;
 using GymPlusAPI.Domain.Entities;
 using GymPlusAPI.Domain.Interfaces;
 using GymPlusAPI.Infrastructure.Data;
@@ -6,11 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GymPlusAPI.Infrastructure.Persistence;
 
-public class SpreadsheetRepository : ISpreadsheetRepository
+public class SpreadsheetRepository(AppDbContext context) : ISpreadsheetRepository
 {
-    private readonly AppDbContext _context;
-    public SpreadsheetRepository(AppDbContext context) => _context = context;
-
     public async Task AddAsync(Spreadsheet spreadsheet)
     {
         if (spreadsheet == null)
@@ -18,8 +14,8 @@ public class SpreadsheetRepository : ISpreadsheetRepository
             throw new ArgumentNullException(nameof(spreadsheet));
         }
 
-        await _context.Spreadsheets.AddAsync(spreadsheet);
-        await _context.SaveChangesAsync();
+        await context.Spreadsheets.AddAsync(spreadsheet);
+        await context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Spreadsheet spreadsheet)
@@ -29,13 +25,13 @@ public class SpreadsheetRepository : ISpreadsheetRepository
             throw new ArgumentNullException(nameof(spreadsheet));
         }
 
-        _context.Spreadsheets.Remove(spreadsheet);
-        await _context.SaveChangesAsync();
+        context.Spreadsheets.Remove(spreadsheet);
+        await context.SaveChangesAsync();
     }
 
     public async Task<Spreadsheet?> GetSpreadsheetByIdAsync(int id, Guid userId)
     {
-        return await _context.Spreadsheets
+        return await context.Spreadsheets
             .Include(s => s.Workouts)
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
@@ -43,13 +39,24 @@ public class SpreadsheetRepository : ISpreadsheetRepository
 
     public async Task<IEnumerable<Spreadsheet>> GetSpreadsheetsByUserAsync(Guid userId)
     {
-        return await _context.Spreadsheets
+        return await context.Spreadsheets
             .Where(s => s.UserId == userId)
             .Include(s => s.Workouts)
             .AsNoTracking()
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Spreadsheet>> TodaySpreadsheet(DayOfWeek dayOfWeek, Guid userId)
+    {
+        return await context.Spreadsheets
+            .Where(s => 
+                s.UserId == userId &&
+                s.DaysOfWeek.Contains(dayOfWeek) &&
+                !s.RecurrentTrainings.Any(rt => rt.UserId == userId && rt.IsCompleted))
+            .AsNoTracking()
+            .ToListAsync();
+    }
+    
     public async Task UpdateAsync(Spreadsheet spreadsheet)
     {
         if (spreadsheet == null)
@@ -57,7 +64,7 @@ public class SpreadsheetRepository : ISpreadsheetRepository
             throw new ArgumentNullException(nameof(spreadsheet));
         }
 
-        _context.Spreadsheets.Update(spreadsheet);
-        await _context.SaveChangesAsync();
+        context.Spreadsheets.Update(spreadsheet);
+        await context.SaveChangesAsync();
     }
 }
