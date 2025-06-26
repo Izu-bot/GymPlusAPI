@@ -2,7 +2,6 @@ using System.Security.Claims;
 using GymPlusAPI.API.Filters;
 using GymPlusAPI.Application.DTOs.Request.Spreadsheet;
 using GymPlusAPI.Application.Interfaces;
-using GymPlusAPI.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -106,6 +105,22 @@ namespace GymPlusAPI.API.Controllers
             await spreadsheetService.DeleteAsync(id, userId);
 
             return NoContent();
+        }
+        
+        [HttpGet("today")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetToday()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var userId = GetClaimUserIdFormClaims();
+
+            var spreadsheet = await spreadsheetService.TodaySpreadsheet(userId);
+
+            return Ok(spreadsheet);
         }
     }
 }

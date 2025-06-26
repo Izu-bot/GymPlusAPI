@@ -1,5 +1,6 @@
 using System;
 using GymPlusAPI.Application.DTOs.Request.Spreadsheet;
+using GymPlusAPI.Application.DTOs.Response.CustomMuscleGroup;
 using GymPlusAPI.Application.DTOs.Response.Spreadsheet;
 using GymPlusAPI.Application.DTOs.Response.Workout;
 using GymPlusAPI.Application.Interfaces;
@@ -13,20 +14,27 @@ public class SpreadsheetService(ISpreadsheetRepository spreadsheetRepository) : 
 {
     public async Task<SpreadsheetResponse> CreateAsync(CreateSpreadsheetRequest dto, Guid userId)
     {
-        var spreadsheet = new Spreadsheet(dto.Name, userId);
+        var spreadsheet = new Spreadsheet(dto.Name, dto.Description, dto.IsRecurring, dto.DaysOfWeek, userId);
 
         await spreadsheetRepository.AddAsync(spreadsheet);
 
         return new SpreadsheetResponse(
             spreadsheet.Id,
             spreadsheet.Name,
+            spreadsheet.Description,
+            spreadsheet.IsRecurring,
+            spreadsheet.DaysOfWeek,
             spreadsheet.Workouts.Select(w => new WorkoutResponse(
                 w.Id,
                 w.Name,
                 w.Reps,
                 w.Series,
                 w.Weight
-            )).ToList()
+            )).ToList(),
+            spreadsheet.CustomMuscleGroups.Select(cmg => new CustomMuscleGroupResponse(
+                cmg.Id,
+                cmg.Name,
+                cmg.BitValue)).ToList()
         );
     }
 
@@ -57,13 +65,20 @@ public class SpreadsheetService(ISpreadsheetRepository spreadsheetRepository) : 
         return spreadsheets.Select(s => new SpreadsheetResponse(
             s.Id,
             s.Name,
+            s.Description,
+            s.IsRecurring,
+            s.DaysOfWeek,
             s.Workouts.Select(w => new WorkoutResponse(
                 w.Id,
                 w.Name,
                 w.Reps,
                 w.Series,
                 w.Weight
-            )).ToList()
+            )).ToList(),
+            s.CustomMuscleGroups.Select(cmg => new CustomMuscleGroupResponse(
+                cmg.Id,
+                cmg.Name,
+                cmg.BitValue)).ToList()
         ));
     }
 
@@ -75,13 +90,47 @@ public class SpreadsheetService(ISpreadsheetRepository spreadsheetRepository) : 
         return new SpreadsheetResponse(
             spreadsheet.Id,
             spreadsheet.Name,
+            spreadsheet.Description,
+            spreadsheet.IsRecurring,
+            spreadsheet.DaysOfWeek,
             spreadsheet.Workouts.Select(w => new WorkoutResponse(
                 w.Id,
                 w.Name,
                 w.Reps,
                 w.Series,
                 w.Weight
-            )).ToList()
+            )).ToList(),
+            spreadsheet.CustomMuscleGroups.Select(cmg => new CustomMuscleGroupResponse(
+                cmg.Id,
+                cmg.Name,
+                cmg.BitValue)).ToList()
         );
+    }
+
+    public async Task<IEnumerable<SpreadsheetResponse>> TodaySpreadsheet(Guid userId)
+    {
+        var dayOfWeek = DateTime.Now.DayOfWeek;
+        
+        var spreadsheets = await spreadsheetRepository.TodaySpreadsheet(dayOfWeek, userId)
+            ?? throw new EntityNotFoundException("Planilha");
+
+        return spreadsheets.Select(s => new SpreadsheetResponse(
+            s.Id,
+            s.Name,
+            s.Description,
+            s.IsRecurring,
+            s.DaysOfWeek,
+            s.Workouts.Select(w => new WorkoutResponse(
+                w.Id,
+                w.Name,
+                w.Reps,
+                w.Series,
+                w.Weight
+            )).ToList(),
+            s.CustomMuscleGroups.Select(cmg => new CustomMuscleGroupResponse(
+                cmg.Id,
+                cmg.Name,
+                cmg.BitValue)).ToList()
+        ));
     }
 }
