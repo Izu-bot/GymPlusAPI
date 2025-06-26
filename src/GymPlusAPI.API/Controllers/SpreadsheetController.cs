@@ -2,7 +2,6 @@ using System.Security.Claims;
 using GymPlusAPI.API.Filters;
 using GymPlusAPI.Application.DTOs.Request.Spreadsheet;
 using GymPlusAPI.Application.Interfaces;
-using GymPlusAPI.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

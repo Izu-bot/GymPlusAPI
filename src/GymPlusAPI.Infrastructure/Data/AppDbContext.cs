@@ -10,7 +10,7 @@ public class AppDbContext : DbContext
     public DbSet<Spreadsheet> Spreadsheets { get; set; }
     public DbSet<Workout> Workouts { get; set; }
     public DbSet<CustomMuscleGroup> CustomMuscleGroups { get; set; }
-    public DbSet<TrainingCompleted> TrainingCompleteds { get; set; }
+    public DbSet<RecurrentTraining> RecurrentTrainings { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -122,19 +122,29 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull); // Não remove grupos de musculos
         });
 
-        modelBuilder.Entity<TrainingCompleted>(entity =>
+        modelBuilder.Entity<RecurrentTraining>(entity =>
         {
-            entity.HasKey(tc => tc.Id);
+            entity.HasKey(rt => rt.Id);
 
-            entity.Property(tc => tc.Date)
+            entity.Property(rt => rt.Date)
                 .IsRequired()
                 .HasColumnType("date");
+            
+            entity.HasIndex(rt => new { rt.Date, rt.SpreadsheetId })
+                .IsUnique();
 
-            entity.Property(tc => tc.IsCompleted);
+            entity.Property(rt => rt.IsCompleted);
+
+            entity.Property(rt => rt.Observations);
             
             entity.HasOne(s => s.Spreadsheet)
-                .WithMany(tc => tc.TrainingCompleteds)
+                .WithMany(rt => rt.RecurrentTrainings)
                 .HasForeignKey(tc => tc.SpreadsheetId)
+                .IsRequired();
+            
+            entity.HasOne(u => u.User)
+                .WithMany(rt => rt.RecurrentTrainings)
+                .HasForeignKey(rt => rt.UserId)
                 .IsRequired();
         });
     }

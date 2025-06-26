@@ -8,7 +8,7 @@ public class Spreadsheet
     public int Id { get; init; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; } = DateTime.Now;// Data do inicio da recorrência
+    public DateTime CreatedAt { get; set; } = DateTime.Now; // Data do inicio da recorrência
     
     public bool IsRecurring { get; set; } = false; // Marca se é ou recorrente
     public List<DayOfWeek> DaysOfWeek { get; set; } = new(); // Dias da semana
@@ -20,8 +20,8 @@ public class Spreadsheet
     // Referencia para os treinos
     public List<Workout> Workouts { get; set; } = [];
     public List<CustomMuscleGroup> CustomMuscleGroups { get; set; } = [];
-    public List<TrainingCompleted> TrainingCompleteds { get; set; } = [];
-
+    public List<RecurrentTraining> RecurrentTrainings { get; set; } = [];
+    
     // Contructor
     public Spreadsheet() {} // Para o EF Core
 
