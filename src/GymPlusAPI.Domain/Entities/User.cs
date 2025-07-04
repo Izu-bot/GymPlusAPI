@@ -6,7 +6,7 @@ public class User
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public string Role { get; init; } = string.Empty; // Admin, User, etc.
+    public string Role { get; init; } = string.Empty; // Admin, User, etc
 
     // Constructor
     public User(string username, string password, string name, string role)
