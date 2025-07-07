@@ -46,16 +46,11 @@ namespace GymPlusAPI.API.Controllers
         {
             if(!ModelState.IsValid)
                 return NotFound(ModelState);
-
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst("sub")?.Value;
-
-            if(!Guid.TryParse(userIdClaim, out var userId))
-                return Unauthorized(); // Fazer Exception não autorizado
                 
-            var user = await userService.GetByIdAsync(userId);
+            var userId = GetClaimUserIdFormClaims();
+            await userService.GetByIdAsync(userId);
                 
-            return Ok(user);
+            return Ok(userId);
         }
 
         [HttpPut("me")]
@@ -82,12 +77,12 @@ namespace GymPlusAPI.API.Controllers
            
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                               ?? User.FindFirst("sub")?.Value;
-                
+            
             if (!Guid.TryParse(userIdClaim, out var userId))
                 return Unauthorized();
-                
+            
             await userService.DeleteAsync(userId);
-
+            
             return NoContent();
         }
     }
