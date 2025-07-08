@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using GymPlusAPI.API.Filters;
 using GymPlusAPI.Application.DTOs.Request.RecurrentTraining;
 using GymPlusAPI.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ namespace GymPlusAPI.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[TypeFilter(typeof(CustomExceptionFilter))]
 public class RecurrentTrainingController(IRecurrentTrainingService recurrentTrainingService) : ControllerBase
 {
     private Guid GetClaimUserIdFormClaims()
@@ -22,7 +24,7 @@ public class RecurrentTrainingController(IRecurrentTrainingService recurrentTrai
         return userId;
     }
 
-    // Nome do placeholde do id deve ser igual ao do parametro :D
+    // Nome do placeholder do id deve ser igual ao do parametro :D
     [HttpPost("{spreadsheetId}/recurrent-training")]
     public async Task<IActionResult> Create(int spreadsheetId, [FromBody] RecurrentTrainingRequest request)
     {
