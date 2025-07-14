@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -31,23 +32,16 @@ builder.Services.AddCors(options => {
 });
 
 #region load variables .env
-
-Env.Load("../../config.env");
-
-var host = Environment.GetEnvironmentVariable("DB_HOST");
-var port = Environment.GetEnvironmentVariable("DB_PORT");
-var user = Environment.GetEnvironmentVariable("DB_USER");
-var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
-var name = Environment.GetEnvironmentVariable("DB_NAME");
+Env.Load();
+builder.Configuration.AddEnvironmentVariables();
 #endregion
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 
-// var connectionString = $"Host={host};Port={port};Pooling=true;Database={name};User Id={user};Password={password};";
+// var connectionString = _configuration.GetConnectionString("DefaultConnection");
 const string connectionString = $"User ID=postgres;Password=3510;Host=localhost;Port=5432;Database=GymPlus;Pooling=true;";
-var jwtKey = builder.Configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JWT Key is not configured.");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -79,20 +73,39 @@ builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
 
 #region Configuração JWT
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtKey)),
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            // Valida quem está gerando o token
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
 
-            // RoleClaimType = ClaimTypes.Role
+            // Valida para quem o token foi gerado
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+
+            // Valida se o token ainda não expirou
+            ValidateLifetime = true,
+
+            // Valida a chave de assinatura para garantir que o token não foi alterado
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey =
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)),
+
+            // Permite uma pequena margem de tempo caso os relógios do servidor e cliente não estejam perfeitamente sincronizados
+            ClockSkew = TimeSpan.Zero
         };
     });
 #endregion
+
+// Adicionar serviços de autorização
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

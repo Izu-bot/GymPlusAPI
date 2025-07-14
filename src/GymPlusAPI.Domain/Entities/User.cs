@@ -16,6 +16,8 @@ public class User
         Name = name;
         Role = role;
     }
+    
+    public User() {}
 
     // Faz comunicação com planilhas
     public List<Spreadsheet> Spreadsheets { get; init; } = []; // Usuario tem várias planilhas

@@ -9,38 +9,38 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace GymPlusAPI.Infrastructure.Security;
 
-public class JwtGenerator : IJwtGenerator
+public class JwtGenerator(IConfiguration configuration) : IJwtGenerator
 {
-    private readonly IConfiguration _configuration;
-
-    public JwtGenerator(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
     public string GenerateToken(User user)
     {
+        // Busca as configurações do appsettings.json
+        var issuer = configuration["JwtSettings:Issuer"];
+        // var audience = configuration["JwtSettings:Audience"];
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]!));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        
+        // Claims são as informações que eu quero armazenar no token
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(ClaimTypes.Role, user.Role),
+            new Claim(ClaimTypes.Name, user.Name),
+            new Claim(ClaimTypes.Email, user.Username),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // ID unico para o token
         };
 
-        var secret = _configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JwtSettings:Secret is not configured.");
-        
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var tokenDescriptor = new SecurityTokenDescriptor
+        var tokenDescriptor = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddDays(7),
+            Expires = DateTime.UtcNow.AddDays(8), // Tempo de expiração do token
+            Issuer = issuer,
+            // Audience = audience,
             SigningCredentials = credentials
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+        var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        return tokenHandler.WriteToken(securityToken);
+        return tokenHandler.WriteToken(token);
     }
 }
