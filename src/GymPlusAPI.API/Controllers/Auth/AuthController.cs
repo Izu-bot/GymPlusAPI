@@ -1,5 +1,6 @@
 using GymPlusAPI.Application.Auth;
 using GymPlusAPI.Application.DTOs.Request.Login;
+using GymPlusAPI.Application.DTOs.Response.Login;
 using GymPlusAPI.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,13 +25,19 @@ namespace GymPlusAPI.API.Controllers.Auth
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                
                 var user = await _authService.LoginAsync(request);
 
                 if (user == null)
                 {
                     return Unauthorized(new { message = "Invalid email or password" });
                 }
-                return Ok(new { token = user.AccessToken });
+
+                return Ok(new LoginResponse(user.AccessToken));
             }
             catch (Exception ex)
             {
