@@ -4,7 +4,7 @@
 
 # /GymPlusAPI.Infrastructure/.env
 src/GymPlusAPI.Infrastructure/Migrations
-*config.env
+*.env
 *.idea
 
 # User-specific files

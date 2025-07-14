@@ -1,4 +1,3 @@
-using System;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -9,17 +8,11 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        Env.Load("../../config.env");
-        
-        var host = Environment.GetEnvironmentVariable("DB_HOST");
-        var port = Environment.GetEnvironmentVariable("DB_PORT");
-        var database = Environment.GetEnvironmentVariable("DB_NAME");
-        var user = Environment.GetEnvironmentVariable("DB_USER");
-        var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
+        DotNetEnv.Env.Load();
 
         var connectionString =
             $"User ID=postgres;Password=3510;Host=localhost;Port=5432;Database=GymPlus;Pooling=true;";
-        // var connectionString = $"Host={host};Port={port};Pooling=true;Database={database};User Id={user};Password={password};";
+        // var connectionString = _configuration.GetConnectionString("DefaultConnection");
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseNpgsql(connectionString);
