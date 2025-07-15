@@ -5,6 +5,7 @@ API REST para gerenciamento de usuários, planilhas de treino e exercícios, des
 ## Funcionalidades
 
 - Cadastro, autenticação e gerenciamento de usuários
+- Login com Google Sign-in
 - Criação, edição, listagem e exclusão de planilhas de treino
 - Criação, edição, listagem e exclusão de exercícios vinculados a planilhas
 - Autenticação via JWT
@@ -13,14 +14,16 @@ API REST para gerenciamento de usuários, planilhas de treino e exercícios, des
 
 ## Estrutura do Projeto
 
-```
+``` bash
 GymPlusAPI.sln
 src/
   GymPlusAPI.API/           # Projeto principal da API
   GymPlusAPI.Application/   # Regras de negócio e validações
   GymPlusAPI.Domain/        # Entidades e interfaces de domínio
   GymPlusAPI.Infrastructure/# Persistência e segurança
-config.env                  # Variáveis de ambiente (conexão com banco)
+tests/
+  GymPlusAPI.UnitTests/     # Projeto principal para testes no controller
+.env                        # Variáveis de ambiente (conexão com banco)
 Dockerfile                  # Build e execução via Docker
 ```
 
@@ -43,6 +46,9 @@ Dockerfile                  # Build e execução via Docker
 - Entity Framework Core + PostgreSQL
 - JWT Authentication
 - FluentValidation
+- Google API Auth
+- Moq
+- XUnit
 - Scalar (OpenAPI)
 - Docker
 
